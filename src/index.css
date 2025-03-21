@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import "tailwindcss";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+@import "swiper/css";
+
+[drawer-backdrop] {
+    display: none;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.gambar-logo {
+  max-width: 100%;
+}
+
+.gradasi {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+.gradasi::before,
+.gradasi::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30%; /* Lebar gradasi */
+  z-index: 2; /* Pastikan di atas logo */
+}
+
+.gradasi::before {
+  left: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0), #f6f5fa);
+  width: 30%;
+}
+
+.gradasi::after {
+  right: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), #f6f5fa);
+  width: 30%;
+}
+
+.logo-container {
+  overflow: hidden;
+  display: flex;
+}
+
+.logo {
+  display: flex;
+  flex-shrink: 0;
+  gap: 3rem;
+  align-items: center;
+  padding: 1rem;
+  animation: inifite-scroll 30s linear infinite;
+}
+
+.logo img {
+  height: 3rem;
+}
+
+.gambar-logo2 {
+  max-width: 100%;
+}
+
+.logo-container2 {
+  overflow: hidden;
+  display: flex;
+}
+
+.logo2 {
+  display: flex;
+  flex-shrink: 0;
+  gap: 3rem;
+  align-items: center;
+  padding: 1rem;
+  animation: inifite-scroll2 30s linear infinite;
+}
+
+.logo2 img {
+  height: 3rem;
+}
+
+@keyframes inifite-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes inifite-scroll2 {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
