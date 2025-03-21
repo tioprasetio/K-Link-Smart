@@ -1,6 +1,8 @@
+import "flowbite/dist/flowbite.min.js";
 import { Link, useNavigate } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
 import { useEffect } from "react";
+import "flowbite";
 import { useCart } from "../context/CartContext";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
@@ -11,6 +13,14 @@ const NavbarComponent = () => {
   const { cart, clearCart } = useCart();
 
   const { isLoggedIn, setIsLoggedIn, logout } = useAuth();
+
+  useEffect(() => {
+    import("flowbite").then((flowbite) => {
+      if (flowbite && flowbite.initFlowbite) {
+        flowbite.initFlowbite();
+      }
+    });
+  }, []);
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
