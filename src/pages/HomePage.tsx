@@ -9,6 +9,10 @@ import NavbarComponent from "../components/Navbar";
 import Banner from "../components/Banner";
 import SearchBar from "../components/SearchBar";
 import Category from "../components/Categories";
+import Footer from "../components/Footer";
+import Copyright from "../components/Copyright";
+import Payment from "../components/Payment";
+import PopupVoucher from "../components/PopupVoucher";
 
 const HomePage = () => {
   const { products, loading } = useProducts();
@@ -25,6 +29,7 @@ const HomePage = () => {
     () => bestSellers.slice(0, 4),
     [bestSellers]
   );
+  
   const displayedProducts = useMemo(() => products.slice(0, 4), [products]);
 
   return (
@@ -33,6 +38,7 @@ const HomePage = () => {
         isDarkMode ? "bg-[#140c00]" : "bg-[#f4f6f9]"
       } pt-16 sm:pt-24 overflow-x-hidden w-full min-h-screen`}
     >
+      <PopupVoucher />
       <NavbarComponent />
       <div className="p-4">
         <Banner />
@@ -116,7 +122,10 @@ const HomePage = () => {
             </div>
           </div>
         </div>
+        <Payment />
       </div>
+      <Footer />
+      <Copyright />
     </div>
   );
 };

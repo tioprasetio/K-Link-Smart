@@ -16,6 +16,22 @@ import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import CheckoutPage from "./pages/CheckoutPage";
 import EditProfile from "./pages/EditProfile";
+import GuestRoute from "./routes/guestRoute";
+import PaymentCallbackPage from "./pages/PaymentCallbackPage";
+import ProfilePage from "./pages/ProfilePage";
+import MyOrderPage from "./pages/MyOrderPage";
+import BestSellers from "./pages/BestSellersPage";
+import VoucherPage from "./pages/VoucherPage";
+import VoucherDetailPage from "./pages/VoucherDetailPage";
+import HistoryBvPage from "./pages/HistoryBvPage";
+import AboutUsPage from "./pages/AboutUsPage";
+import DownlinePage from "./pages/DownlinePage";
+import WhyUsPage from "./pages/WhyUsPage";
+import ShippingRatePage from "./pages/ShippingRatePage";
+import ReplacemenetPage from "./pages/ReplacementPage";
+import DeliveryPage from "./pages/DeliveryPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import HowToOrderPage from "./pages/HowToOrder";
 
 function App() {
   // const location = useLocation(); // Mengambil lokasi saat ini di React Router
@@ -34,20 +50,44 @@ function App() {
 
   return (
     <>
-      <AuthProvider>
-        <CartProvider>
+      <CartProvider>
+        <AuthProvider>
           <CheckoutProvider>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/about-us" element={<AboutUsPage />} />
+              <Route path="/why" element={<WhyUsPage />} />
+              <Route path="/shipping-rate" element={<ShippingRatePage />} />
+              <Route path="/replacement" element={<ReplacemenetPage />} />
+              <Route path="/delivery" element={<DeliveryPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/how-to-order" element={<HowToOrderPage />} />
+              <Route element={<GuestRoute />}>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+              </Route>
               <Route path="/all-product" element={<AllProduct />} />
+              <Route path="/best-sellers" element={<BestSellers />} />
+              <Route path="/voucher" element={<VoucherPage />} />
+              {/* Dynamic Route */}
+              <Route
+                path="/voucher/:voucherSlug"
+                element={<VoucherDetailPage />}
+              />
               <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route
+                path="/payment-callback"
+                element={<PaymentCallbackPage />}
+              />
               <Route element={<ProtectedRoute />}>
-                <Route path="/cart" element={<CartPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/my-order" element={<MyOrderPage />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/history-bv" element={<HistoryBvPage />} />
+                <Route path="/downline" element={<DownlinePage />} />
               </Route>
 
               {/* Dynamic Route */}
@@ -59,8 +99,8 @@ function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </CheckoutProvider>
-        </CartProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </CartProvider>
     </>
   );
 }

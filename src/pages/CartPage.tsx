@@ -156,9 +156,13 @@ const CartPage = () => {
               />
               <a className="inline-block" href="#">
                 <img
-                  src={item.picture}
+                  src={`${import.meta.env.VITE_API_URL}/storage/${
+                    item.picture
+                  }`}
                   alt={item.name}
                   className="h-16 w-16 mr-2 object-cover rounded-md"
+                  width={800}
+                  height={800}
                 />
               </a>
               <div className="flex-1">

@@ -6,7 +6,15 @@ const ProductList = () => {
   const { products, loading, error } = useProducts();
   const { isDarkMode } = useDarkMode();
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
+          Memuat data...
+        </p>
+      </div>
+    );
+
   if (error) return <p>{error}</p>;
 
   // Filter best sellers

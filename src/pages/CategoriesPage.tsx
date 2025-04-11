@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router";
 import NavbarComponent from "../components/Navbar";
 import { useDarkMode } from "../context/DarkMode";
 import { useEffect, useState } from "react";
-import useProducts from "../context/ProductContext";// Tambahkan ini
+import useProducts from "../context/ProductContext"; // Tambahkan ini
 import CardProduct from "../components/CardProduct";
 import { Product } from "../types/Product";
 import useCategories from "../context/CategoriesContext";

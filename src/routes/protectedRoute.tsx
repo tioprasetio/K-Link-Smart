@@ -1,17 +1,10 @@
 import { Navigate, Outlet } from "react-router";
 import { useAuth } from "../context/AuthContext";
-import { useState, useEffect } from "react";
 import { useDarkMode } from "../context/DarkMode";
 
 const ProtectedRoute = () => {
-  const { isLoggedIn } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { isLoggedIn, loading } = useAuth();
   const { isDarkMode } = useDarkMode();
-
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000); // Simulasi cek autentikasi
-  }, []);
 
   if (loading)
     return (

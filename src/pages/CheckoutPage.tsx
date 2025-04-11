@@ -2,38 +2,250 @@ import Swal from "sweetalert2";
 import { useCheckout } from "../context/CheckoutContext";
 import { formatRupiah } from "../utils/formatCurrency";
 import Btn from "../components/Btn";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-
-interface ShippingMethod {
-  name: string;
-  price: number;
-}
+import { DestinationResult } from "../types/Destination";
+import { ShippingMethod } from "../types/ShippingMethod";
+import { ShippingOption } from "../types/ShippingOption";
+import PromoProduct from "../components/PromoProduct";
 
 const CheckoutPage = () => {
+  // Context hooks
   const { selectedProducts, setSelectedProducts } = useCheckout();
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
 
-  const [voucherCode, setVoucherCode] = useState("");
-  const [discount, setDiscount] = useState(0);
+  // Receiver information
+  const [receiverName, setReceiverName] = useState(user?.name || "");
+  const [receiverPhone, setReceiverPhone] = useState(user?.no_hp || "");
+  const [receiverAddress, setReceiverAddress] = useState(user?.alamat || "");
+  const [useDifferentReceiver, setUseDifferentReceiver] = useState(false);
 
-  const [methods, setMethods] = useState<ShippingMethod[]>([]);
+  // Shipping information
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [destinationResults, setDestinationResults] = useState<
+    DestinationResult[]
+  >([]);
+  const [selectedDestination, setSelectedDestination] =
+    useState<DestinationResult | null>(null);
+
+  // Shipping methods
+  const [shippingMethods, setShippingMethods] = useState<ShippingMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<ShippingMethod | null>(
     null
   );
+  const [isLoadingMethods, setIsLoadingMethods] = useState(false);
+  const [methodsError, setMethodsError] = useState<string | null>(null);
 
-  const { user } = useAuth();
+  // Shipping options
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedOption, setSelectedOption] = useState<ShippingOption | null>(
+    null
+  );
+  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
 
-  if (selectedProducts.length === 0) {
-    navigate("/cart");
-  }
+  // Voucher
+  const [voucherCode, setVoucherCode] = useState("");
+  const [discount, setDiscount] = useState(0);
 
-  // Fungsi untuk menerapkan voucher dari database
+  // Calculate values
+  const totalWeight = useMemo(() => {
+    return selectedProducts.reduce(
+      (total, item) => total + (item.beratPengiriman / 1000) * item.quantity,
+      0
+    );
+  }, [selectedProducts]);
+
+  const hargaProduct = useMemo(() => {
+    return selectedProducts.reduce(
+      (total, item) => total + item.harga * item.quantity,
+      0
+    );
+  }, [selectedProducts]);
+
+  const totalHarga = useMemo(() => {
+    return (
+      hargaProduct * (1 - discount / 100) + (selectedOption?.shipping_cost || 0)
+    );
+  }, [hargaProduct, discount, selectedOption]);
+
+  const totalBV = useMemo(() => {
+    return selectedProducts.reduce(
+      (total, item) => total + item.bv * item.quantity,
+      0
+    );
+  }, [selectedProducts]);
+
+  // Initial checks
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+    }
+    if (selectedProducts.length === 0) {
+      navigate("/cart");
+    }
+  }, [user, loading, navigate, selectedProducts]);
+
+  // Set user data on load
+  useEffect(() => {
+    if (user) {
+      setReceiverName(user.name || "");
+      setReceiverPhone(user.no_hp || "");
+      setReceiverAddress(user.alamat || "");
+    }
+  }, [user]);
+
+  // Search destination function
+  const searchDestination = async () => {
+    if (!searchQuery.trim()) {
+      Swal.fire("Info", "Please enter destination keyword", "info");
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/search-destination",
+        {
+          params: { keyword: searchQuery },
+        }
+      );
+
+      if (response.data.success && response.data.data.length > 0) {
+        setDestinationResults(response.data.data);
+      } else {
+        Swal.fire("Info", "No destinations found", "info");
+        setDestinationResults([]);
+      }
+    } catch {
+      Swal.fire("Error", "Failed to search destination", "error");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Fetch shipping methods when destination changes
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchShippingMethods = async () => {
+      if (!selectedDestination) {
+        if (isMounted) {
+          setShippingMethods([]);
+          setSelectedMethod(null);
+        }
+        return;
+      }
+
+      setIsLoadingMethods(true);
+      setMethodsError(null);
+
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/shipping-methods",
+          {
+            params: {
+              receiver_destination_id: selectedDestination.id,
+              weight: totalWeight,
+              item_value: hargaProduct,
+            },
+          }
+        );
+
+        if (isMounted) {
+          if (response.data?.success && Array.isArray(response.data.data)) {
+            setShippingMethods(response.data.data);
+            setSelectedMethod(null);
+
+            // Auto-select if only one method available
+            if (response.data.data.length === 1) {
+              setSelectedMethod(response.data.data[0]);
+            }
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error loading shipping methods:", error);
+          setMethodsError("Failed to load shipping methods");
+          Swal.fire("Error", "Failed to load shipping methods", "error");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingMethods(false);
+        }
+      }
+    };
+
+    fetchShippingMethods();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedDestination, totalWeight, hargaProduct]);
+
+  // Fetch shipping options when method or destination changes
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchShippingOptions = async () => {
+      if (!selectedMethod || !selectedDestination) {
+        if (isMounted) {
+          setShippingOptions([]);
+          setSelectedOption(null);
+        }
+        return;
+      }
+
+      setIsLoadingShipping(true);
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/calculate-shipping",
+          {
+            params: {
+              shipper_destination_id: "17579",
+              receiver_destination_id: selectedDestination.id,
+              weight: totalWeight,
+              item_value: hargaProduct,
+              cod: "no",
+            },
+          }
+        );
+
+        if (isMounted) {
+          const filteredOptions = response.data.shipping_options.filter(
+            (option: ShippingOption) =>
+              option.shipping_name.toLowerCase() ===
+              selectedMethod.id.toLowerCase()
+          );
+
+          setShippingOptions(filteredOptions);
+          setSelectedOption(filteredOptions[0] || null);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error:", error);
+          Swal.fire("Error", "Failed to calculate shipping cost", "error");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingShipping(false);
+        }
+      }
+    };
+
+    fetchShippingOptions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedMethod, selectedDestination, totalWeight, hargaProduct]);
+
+  // Voucher application
   const handleApplyVoucher = async () => {
     if (!voucherCode) {
       Swal.fire("Error", "Masukkan kode voucher!", "error");
@@ -59,13 +271,12 @@ const CheckoutPage = () => {
           "error"
         );
       }
-    } catch (error) {
-      console.error("Error checking voucher:", error);
+    } catch {
       Swal.fire("Error", "Terjadi kesalahan saat memeriksa voucher!", "error");
     }
   };
 
-  // Fungsi untuk membatalkan checkout
+  // Cancel checkout
   const handleCancelCheckout = () => {
     Swal.fire({
       title: "Batalkan Checkout?",
@@ -86,47 +297,37 @@ const CheckoutPage = () => {
     });
   };
 
-  // Ambil metode pengiriman dari API Express
-  useEffect(() => {
-    const fetchShippingMethods = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/method-shipping"
-        );
-
-        setMethods(response.data);
-      } catch (error) {
-        console.error("Error fetching shipping methods:", error);
-      }
-    };
-
-    fetchShippingMethods();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      setLoading(false);
-    } else {
-      navigate("/login");
+  // Payment processing
+  const handlePayment = async () => {
+    if (!selectedOption) {
+      Swal.fire("Error", "Pilih metode pengiriman terlebih dahulu", "error");
+      return;
     }
-  }, [user, navigate]);
 
-  const totalHarga =
-    selectedProducts.reduce(
-      (total, item) => total + item.harga * item.quantity,
-      0
-    ) *
-      (1 - discount / 100) +
-    (selectedMethod?.price || 0);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/create-transaction",
+        {
+          userId: user?.id,
+          receiver_name: receiverName,
+          receiver_phone: receiverPhone,
+          receiver_address: `${receiverAddress} (${selectedDestination?.label})`,
+          gross_amount: totalHarga,
+          voucher_code: voucherCode,
+          shipping_cost: selectedOption.shipping_cost,
+          shipping_method: `${selectedMethod?.name} - ${selectedOption.service_name}`,
+          products: selectedProducts,
+        }
+      );
 
-  // Hitung total BV
-  const totalBV = selectedProducts.reduce(
-    (total, item) => total + item.bv * item.quantity,
-    0
-  );
-
-  const handleSelectMethod = (method: ShippingMethod) => {
-    setSelectedMethod(method);
+      window.location.href = response.data.transaction.redirect_url;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("Error creating transaction:", error);
+      const message =
+        error.response?.data?.message || "Failed to create transaction";
+      Swal.fire("Error", message, "error");
+    }
   };
 
   if (loading) {
@@ -143,6 +344,8 @@ const CheckoutPage = () => {
     );
   }
 
+  const exampleCode = "DISC10";
+
   return (
     <div
       className={`${
@@ -156,33 +359,98 @@ const CheckoutPage = () => {
       {/* Informasi Pengguna */}
       <div
         className={`${
-          isDarkMode
-            ? "bg-[#404040] text-[#FFFFFF]"
-            : "bg-[#FFFFFF] text-[#353535]"
-        } p-4 rounded-lg`}
+          isDarkMode ? "bg-[#404040]" : "bg-[#FFFFFF]"
+        } p-4 rounded-lg mt-4`}
       >
-        {user ? (
-          <>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-bold">{user.name}</h2>
-                <p className="text-sm">({user.no_hp})</p>
-              </div>
-              <Link
-                to="/edit-profile"
-                className={`py-2 px-4 rounded cursor-pointer text-3xl items-center justify-center ${
-                  isDarkMode ? "text-[#f0f0f0]" : "text-[#959595]"
-                }`}
-              >
-                <i className="bx bx-right-arrow-circle"></i>
-              </Link>
-            </div>
-            <div className="space-y-2">
-              <p className="text-sm">{user.alamat}</p>
-            </div>
-          </>
-        ) : (
-          <p>Memuat data pengguna...</p>
+        <h2 className="text-lg font-bold mb-2">Informasi Penerima</h2>
+
+        {/* Tampilkan data user sebagai default */}
+        <div
+          className={`${
+            isDarkMode ? "bg-[#252525]" : "bg-gray-100"
+          } mb-4 p-3  rounded-lg`}
+        >
+          <p className="text-lg font-bold">{user?.name}</p>
+          <p className="text-sm mb-4">{user?.no_hp}</p>
+          <p className="text-sm">{user?.alamat}</p>
+        </div>
+
+        {/* Checkbox untuk toggle form */}
+        <div className="flex items-center mb-3">
+          <input
+            type="checkbox"
+            id="differentReceiver"
+            checked={useDifferentReceiver}
+            onChange={(e) => {
+              setUseDifferentReceiver(e.target.checked);
+              // Reset ke data user jika unchecked
+              if (!e.target.checked) {
+                setReceiverName(user?.name || "");
+                setReceiverPhone(user?.no_hp || "");
+                setReceiverAddress(user?.alamat || "");
+              }
+            }}
+            className="mr-2 cursor-pointer"
+          />
+          <label htmlFor="differentReceiver">
+            *Gunakan data penerima berbeda
+          </label>
+        </div>
+
+        {/* Form muncul ketika checkbox dicentang */}
+        {useDifferentReceiver && (
+          <div className="space-y-2 animate-fadeIn">
+            <input
+              type="text"
+              value={receiverName}
+              onChange={(e) => setReceiverName(e.target.value)}
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } border p-2 rounded w-full`}
+              placeholder="Nama Penerima"
+              required
+            />
+            <input
+              type="tel"
+              value={receiverPhone}
+              onChange={(e) => setReceiverPhone(e.target.value)}
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } border p-2 rounded w-full`}
+              placeholder="Nomor HP"
+              required
+            />
+            <textarea
+              value={receiverAddress}
+              onChange={(e) => setReceiverAddress(e.target.value)}
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } border p-2 rounded w-full`}
+              placeholder="Alamat Lengkap"
+              required
+            ></textarea>
+
+            {/* Tombol reset */}
+            <button
+              type="button"
+              onClick={() => {
+                setReceiverName(user?.name || "");
+                setReceiverPhone(user?.no_hp || "");
+                setReceiverAddress(user?.alamat || "");
+              }}
+              className={`${
+                isDarkMode ? "text-white" : "text-white"
+              } bg-[#28a154] p-2 rounded-lg text-sm mt-1 text-left cursor-pointer`}
+            >
+              Kembalikan ke data profile
+            </button>
+          </div>
         )}
       </div>
 
@@ -201,7 +469,9 @@ const CheckoutPage = () => {
               } p-4 rounded-lg flex items-center mt-4`}
             >
               <img
-                src={product.picture}
+                src={`${import.meta.env.VITE_API_URL}/storage/${
+                  product.picture
+                }`}
                 alt={product.name}
                 className="h-16 w-16 mr-4 object-cover rounded-md"
               />
@@ -216,15 +486,25 @@ const CheckoutPage = () => {
       )}
 
       {/* Voucher */}
-      <div className="mt-4 p-4 bg-white rounded-lg">
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
+      >
         <h3 className="font-bold mb-2">Gunakan Voucher</h3>
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Masukkan kode voucher"
+            placeholder={`(contoh: ${exampleCode})`}
             value={voucherCode}
             onChange={(e) => setVoucherCode(e.target.value)}
-            className="border p-2 rounded w-full"
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#FFFFFF]"
+                : "bg-[#FFFFFF] text-[#353535]"
+            } border p-2 rounded w-full`}
           />
           <button
             onClick={handleApplyVoucher}
@@ -234,30 +514,165 @@ const CheckoutPage = () => {
           </button>
         </div>
       </div>
+      <PromoProduct />
 
       {/* Metode Pengiriman */}
-      <div className="mt-4 p-4 bg-white rounded-lg">
-        <h3 className="font-bold mb-2">Pilih Metode Pengiriman</h3>
-        {methods.length === 0 ? (
-          <p>Memuat metode pengiriman...</p>
-        ) : (
-          <select
-            value={selectedMethod?.name || ""}
-            onChange={(e) => {
-              const selected = methods.find((m) => m.name === e.target.value);
-              if (selected) handleSelectMethod(selected);
-            }}
-            className="border p-2 rounded w-full"
-          >
-            <option value="" disabled>
-              Pilih metode pengiriman
-            </option>
-            {methods.map((method, index) => (
-              <option key={index} value={method.name}>
-                {method.name} - {formatRupiah(method.price)}
-              </option>
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg shadow mb-6 mt-4`}
+      >
+        <h2 className="text-lg font-bold mb-4">Destinasi Pengiriman</h2>
+
+        <div className="mb-4">
+          <label className="block mb-2">Cari alamat</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="e.g. 'Bekasi, Jawa Barat'"
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } flex-1 p-2 border rounded`}
+            />
+            <button
+              onClick={searchDestination}
+              className="bg-[#28A154] text-white px-4 py-2 rounded"
+              disabled={isSearching}
+            >
+              {isSearching ? "Loading..." : "Cari"}
+            </button>
+          </div>
+        </div>
+
+        {/* Search Results */}
+        {destinationResults.length > 0 && (
+          <div className="max-h-40 overflow-y-auto mb-4">
+            {destinationResults.map((destination) => (
+              <div
+                key={destination.id}
+                className={`${
+                  isDarkMode
+                    ? "bg-[#353535] hover:bg-[#252525] text-[#FFFFFF]"
+                    : "bg-[#F4F6F9] hover:bg-[#e9eaec] text-[#353535]"
+                } p-3 mb-2 rounded cursor-pointer`}
+                onClick={() => {
+                  setSelectedDestination(destination);
+                  setSearchQuery(destination.label);
+                  setDestinationResults([]);
+                }}
+              >
+                <p className="font-medium">{destination.label}</p>
+                <p className="text-sm text-gray-400">
+                  {destination.subdistrict_name}, {destination.city_name}
+                </p>
+              </div>
             ))}
-          </select>
+          </div>
+        )}
+
+        {/* Selected Destination */}
+        {selectedDestination && (
+          <div
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#FFFFFF]"
+                : "bg-[#FFFFFF] text-[#353535]"
+            } p-3 rounded`}
+          >
+            <p className="font-medium">Dipilih:</p>
+            <p>{selectedDestination.label}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Shipping Method */}
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg shadow mb-6`}
+      >
+        <h2 className="text-lg font-bold mb-4">Metode Pengiriman</h2>
+
+        <div className="mb-4">
+          <label className="block mb-2">Ekspedisi</label>
+          {isLoadingMethods ? (
+            <div className="flex items-center justify-center p-4">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+              <span className="ml-2">Loading ekspedisi...</span>
+            </div>
+          ) : methodsError ? (
+            <div className="p-4 bg-red-50 rounded-lg flex flex-col items-center">
+              <p className="text-red-500">{methodsError}</p>
+              <button
+                onClick={() => setMethodsError(null)}
+                className="mt-2 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <select
+              value={selectedMethod?.id || ""}
+              onChange={(e) => {
+                const method = shippingMethods.find(
+                  (m) => m.id === e.target.value
+                );
+                setSelectedMethod(method || null);
+              }}
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } w-full p-2 border rounded`}
+              disabled={!selectedDestination}
+            >
+              <option value="">Pilih Ekspedisi</option>
+              {shippingMethods.map((method) => (
+                <option key={method.id} value={method.id}>
+                  {method.name} - {method.description}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {/* Shipping Options */}
+        {isLoadingShipping && (
+          <p className="text-center py-4">Loading Ekspedisi...</p>
+        )}
+        {!isLoadingShipping && selectedMethod && shippingOptions.length > 0 && (
+          <div>
+            <label className="block mb-2">Kategori</label>
+            <select
+              value={selectedOption?.service_name || ""}
+              onChange={(e) => {
+                const option = shippingOptions.find(
+                  (o) => o.service_name === e.target.value
+                );
+                setSelectedOption(option || null);
+              }}
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } w-full p-2 border rounded`}
+            >
+              {shippingOptions.map((option, index) => (
+                <option key={index} value={option.service_name}>
+                  {option.service_name} - {formatRupiah(option.shipping_cost)}{" "}
+                  (ETA: {option.etd})
+                </option>
+              ))}
+            </select>
+          </div>
         )}
       </div>
 
@@ -275,12 +690,12 @@ const CheckoutPage = () => {
         </div>
         <div className="flex justify-between">
           <p className="font-medium">Subtotal untuk produk</p>
-          <p className="font-medium">{formatRupiah(totalHarga)}</p>
+          <p className="font-medium">{formatRupiah(hargaProduct)}</p>
         </div>
         <div className="flex justify-between">
           <p className="font-medium">Subtotal pengiriman</p>
           <p className="font-medium">
-            {formatRupiah(selectedMethod?.price || 0)}
+            {selectedOption ? formatRupiah(selectedOption.shipping_cost) : "-"}
           </p>
         </div>
         <div className="flex justify-between">
@@ -317,6 +732,7 @@ const CheckoutPage = () => {
             Batal
           </Btn>
           <Btn
+            onClick={handlePayment}
             className={`${
               isDarkMode
                 ? "bg-[#28a154] text-[#f0f0f0]"

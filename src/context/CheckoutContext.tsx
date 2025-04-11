@@ -8,11 +8,13 @@ import {
 
 interface Product {
   id: number;
+  product_id: number;
   name: string;
   harga: number;
   quantity: number;
   picture: string;
   bv: number;
+  beratPengiriman: number;
 }
 
 interface CheckoutContextType {

@@ -8,7 +8,15 @@ const Category = () => {
   const { isDarkMode } = useDarkMode();
   const { categories, loading, error } = useCategories();
 
-  if (loading) return <p>Memuat promo...</p>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
+          Memuat data...
+        </p>
+      </div>
+    );
+
   if (error) return <p>{error}</p>;
 
   return (
@@ -35,8 +43,13 @@ const Category = () => {
                 } p-4 rounded-lg text-center flex flex-col items-center min-h-[200px] justify-center`}
               >
                 <img
-                  src={categories.picture}
+                  src={`${import.meta.env.VITE_API_URL}/storage/${
+                    categories.picture
+                  }`}
                   className="w-24 h-24 object-cover"
+                  loading="lazy"
+                  width={512}
+                  height={512}
                   alt={categories.name}
                 />
                 <h3

@@ -1,5 +1,5 @@
 import "flowbite/dist/flowbite.min.js";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
 import { useEffect } from "react";
 import "flowbite";
@@ -9,7 +9,6 @@ import { useAuth } from "../context/AuthContext";
 
 const NavbarComponent = () => {
   const { isDarkMode, setIsDarkMode } = useDarkMode();
-  const navigate = useNavigate();
   const { cart, clearCart } = useCart();
 
   const { isLoggedIn, setIsLoggedIn, logout } = useAuth();
@@ -50,16 +49,7 @@ const NavbarComponent = () => {
         logout(); // Panggil fungsi logoutUser
         setIsLoggedIn(false); // Update state loggedIn
         clearCart();
-        navigate("/login"); // Redirect ke halaman login setelah logout
-
-        // Beri notifikasi sukses
-        Swal.fire({
-          title: "Berhasil!",
-          text: "Anda telah logout.",
-          icon: "success",
-          showConfirmButton: false, // Supaya langsung otomatis hilang
-          timer: 1000, // Hilang dalam 1 detik
-        });
+        window.location.assign("/login");
       }
     });
   };
@@ -77,8 +67,9 @@ const NavbarComponent = () => {
         >
           <img
             src="https://k-net.co.id/assets/images/logo.png"
-            className="h-8"
+            className="h-8 w-auto"
             alt="K-Link"
+            loading="lazy"
           />
           <span
             className={`${
@@ -100,7 +91,7 @@ const NavbarComponent = () => {
             } flex items-center justify-center cursor-pointer py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm text-center`}
           >
             <i className="bx bxs-cart-add text-xl"></i>
-            {totalItems > 0 ? `(${totalItems})` : ""}
+            {isLoggedIn && totalItems > 0 && `(${totalItems})`}
           </Link>
 
           {/* Profile Button */}
@@ -212,7 +203,7 @@ const NavbarComponent = () => {
                 } hidden cursor-pointer md:block py-2 px-3 hover:text-white w-full md:w-auto hover:bg-[#28a154] rounded-sm text-center`}
               >
                 <i className="bx bxs-cart-add"></i>
-                {totalItems > 0 ? `(${totalItems})` : ""}
+                {isLoggedIn && totalItems > 0 && `(${totalItems})`}
               </Link>
             </li>
 

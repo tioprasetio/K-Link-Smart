@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import usePopupVoucher from "../context/PopupVoucher";
+import { useDarkMode } from "../context/DarkMode";
 
 const PopupVoucher = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const { popupVoucher, loading, error } = usePopupVoucher();
+  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     if (isOpen) {
@@ -18,6 +22,16 @@ const PopupVoucher = () => {
 
   if (!isOpen) return null;
 
+  if (loading) return (
+    <div className="flex justify-center items-center h-screen">
+      <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
+        Memuat data...
+      </p>
+    </div>
+  );
+  
+  if (error) return <p>{error}</p>;
+
   return (
     isOpen && (
       <div className="fixed inset-0 z-50 flex items-center justify-center h-full backdrop-blur-xs bg-[#000000b5]">
@@ -29,7 +43,15 @@ const PopupVoucher = () => {
             <i className="bx bxs-x-circle text-4xl"></i>
           </button>
           <Link to="/voucher">
-            <img src="/assets/images/popupVoucher.png" alt="voucher" />
+            <img
+              src={`${import.meta.env.VITE_API_URL}/storage/${
+                popupVoucher[0]?.picture
+              }`}
+              alt="voucher"
+              className="w-full h-auto"
+              width={1570}
+              height={2160}
+            />
           </Link>
         </div>
       </div>

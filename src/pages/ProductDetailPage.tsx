@@ -7,11 +7,12 @@ import Btn from "../components/Btn";
 import { formatRupiah } from "../utils/formatCurrency";
 import { Product } from "../types/Product";
 import useProducts from "../context/ProductContext";
-import { isUserLoggedIn } from "../api/authService";
 import Chatbot from "../components/Chatbot";
 import PromoProduct from "../components/PromoProduct";
 import NavbarComponent from "../components/Navbar";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useCheckout } from "../context/CheckoutContext";
 
 const ProductDetailPage = () => {
   const { addToCart } = useCart();
@@ -19,7 +20,8 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   const { products, loading, error } = useProducts(); // Ambil data produk dari custom hook
   const { isDarkMode } = useDarkMode();
-  const loggedIn = isUserLoggedIn();
+  const { isLoggedIn } = useAuth();
+  const { setSelectedProducts } = useCheckout();
 
   const [quantity, setQuantity] = useState(1); // State untuk kuantitas produk
   const [product, setProduct] = useState<Product | null>(null); // State untuk menyimpan produk yang dipilih
@@ -56,7 +58,7 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!loggedIn) {
+    if (!isLoggedIn) {
       Swal.fire({
         title: "Oops...",
         text: "Anda harus login terlebih dahulu!",
@@ -95,7 +97,7 @@ const ProductDetailPage = () => {
 
   // Fungsi untuk membeli produk langsung
   const handleBuyNow = () => {
-    if (!loggedIn) {
+    if (!isLoggedIn) {
       Swal.fire({
         title: "Oops...",
         text: "Anda harus login terlebih dahulu!",
@@ -103,24 +105,36 @@ const ProductDetailPage = () => {
       });
       navigate("/login");
     } else if (product) {
-      navigate("/checkout", {
-        state: [
-          {
-            id: product.id,
-            name: product.name,
-            picture: product.picture,
-            harga: product.harga,
-            quantity: quantity,
-            bv: product.bv,
-          },
-        ],
-      });
+      const productToCheckout = {
+        id: product.id,
+        product_id: product.id,
+        name: product.name,
+        picture: product.picture,
+        harga: product.harga,
+        quantity: quantity,
+        bv: product.bv,
+        beratPengiriman: product.beratPengiriman,
+      };
+
+      // Tambahkan produk ke selectedProducts di konteks checkout
+      setSelectedProducts([productToCheckout]);
+      navigate("/checkout");
     }
   };
 
   // Tampilkan loading jika data sedang dimuat
   if (loading) {
-    return <p>Memuat produk...</p>;
+    return (
+      <div
+        className={`${
+          isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
+        } flex justify-center items-center min-h-screen`}
+      >
+        <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
+          Memuat produk...
+        </p>
+      </div>
+    );
   }
 
   // Tampilkan error jika terjadi kesalahan
@@ -130,7 +144,17 @@ const ProductDetailPage = () => {
 
   // Tampilkan pesan jika produk tidak ditemukan
   if (!product) {
-    return <p>Produk tidak ditemukan.</p>;
+    return (
+      <div
+        className={`${
+          isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
+        } flex justify-center items-center min-h-screen`}
+      >
+        <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
+          Produk tidak ditemukan
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -148,9 +172,13 @@ const ProductDetailPage = () => {
             <div className="flex flex-col">
               <section className="bg-[#ffffff] rounded-lg p-4 mb-3 xl:mb-4">
                 <img
-                  src={product.picture}
+                  src={`${import.meta.env.VITE_API_URL}/storage/${
+                    product.picture
+                  }`}
                   alt={product.name}
                   className="w-full object-cover"
+                  width={800}
+                  height={800}
                 />
               </section>
 
@@ -322,9 +350,14 @@ const ProductDetailPage = () => {
                     } p-3 rounded-lg flex rounded-t-lg mt-4 rounded-b-lg`}
                   >
                     <img
-                      src={product.picture}
+                      src={`${import.meta.env.VITE_API_URL}/storage/${
+                        product.picture
+                      }`}
                       alt={product.name}
-                      className="h-16 w-16 mr-2 object-cover"
+                      className="h-16 w-16 mr-2 object-cover rounded-lg"
+                      loading="lazy"
+                      width={800}
+                      height={800}
                     />
                     <div
                       className={`${

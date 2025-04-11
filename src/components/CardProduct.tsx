@@ -55,9 +55,12 @@ const CardProduct = (props: CardProductProps) => {
       onClick={handleClick} // Tambahkan onClick di sini
     >
       <img
-        src={picture}
+        src={`${import.meta.env.VITE_API_URL}/storage/${picture}`}
         alt={name}
         className="w-full object-cover rounded-t-lg"
+        loading="lazy"
+        width={800}
+        height={800}
       />
 
       <div className="p-4 w-full">

@@ -1,41 +1,19 @@
-import { Link, useSearchParams } from "react-router";
+import { Link } from "react-router";
 import NavbarComponent from "../components/Navbar";
 import { useDarkMode } from "../context/DarkMode";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import useProducts from "../context/ProductContext";
 import CardProduct from "../components/CardProduct";
 
-const AllProduct = () => {
+const BestSellers = () => {
   const { products, loading, error } = useProducts();
   const { isDarkMode } = useDarkMode();
-  const [filteredProducts, setFilteredProducts] = useState(products);
 
-  const [searchParams] = useSearchParams();
-  const keyword = searchParams.get("keyword"); //Ambil keyword dari URL
-
-  useEffect(() => {
-    if (keyword) {
-      setFilteredProducts(
-        products.filter((product) =>
-          product.name?.toLowerCase().includes(keyword.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredProducts(products);
-    }
-  }, [keyword, products]);
-
-  //Tambahkan efek untuk filter produk berdasarkan keyword
-  useEffect(() => {
-    if (keyword) {
-      const filtered = products.filter((product) =>
-        product.name?.toLowerCase().includes(keyword.toLowerCase())
-      );
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts(products);
-    }
-  }, [keyword, products]);
+  // Filter best sellers
+  const bestSellers = useMemo(
+    () => products.filter((product) => product.terjual > 2),
+    [products]
+  );
 
   if (loading)
     return (
@@ -63,7 +41,7 @@ const AllProduct = () => {
             <Link className="text-[#28a154]" to="/">
               Home
             </Link>{" "}
-            / Semua Produk
+            / Best Sellers
           </span>
         </div>
 
@@ -73,8 +51,8 @@ const AllProduct = () => {
               <div className="flex justify-center items-center h-40">
                 <p className="text-gray-500">Loading...</p>
               </div>
-            ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
+            ) : bestSellers.length > 0 ? (
+              bestSellers.map((product) => (
                 <CardProduct
                   key={product.id}
                   {...product}
@@ -93,4 +71,4 @@ const AllProduct = () => {
   );
 };
 
-export default AllProduct;
+export default BestSellers;

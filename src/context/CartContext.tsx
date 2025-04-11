@@ -9,6 +9,7 @@ interface CartItem {
   harga: number;
   picture: string;
   quantity: number;
+  beratPengiriman: number;
   bv: number;
 }
 
@@ -18,6 +19,7 @@ interface CartContextType {
   decreaseQuantity: (productId: number, quantity: number) => void;
   removeFromCart: (cartId: number) => void;
   fetchCart: () => void;
+  clearCheckedOutItems: (selectedProducts: CartItem[]) => void;
   clearCart: () => void;
 }
 
@@ -106,6 +108,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart([]); // Kosongkan cart
   };
 
+  const clearCheckedOutItems = async (selectedProducts: CartItem[]) => {
+    try {
+      // Loop melalui selectedProducts dan hapus dari cart
+      for (const product of selectedProducts) {
+        await axios.delete(`http://localhost:5000/api/cart/${product.id}`);
+      }
+
+      // Refresh data keranjang setelah menghapus item
+      fetchCart();
+    } catch (error) {
+      console.error("Error clearing checked out items:", error);
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -114,6 +130,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         decreaseQuantity,
         removeFromCart,
         fetchCart,
+        clearCheckedOutItems,
         clearCart,
       }}
     >

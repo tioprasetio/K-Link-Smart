@@ -8,17 +8,21 @@ const useVouchers = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios
-      .get<Voucher[]>("http://localhost:5000/api/vouchers")
-      .then((response) => {
+    const fetchVouchers = async () => {
+      try {
+        const response = await axios.get<Voucher[]>(
+          "http://localhost:5000/api/vouchers"
+        );
         setVouchers(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching vouchers:", error);
         setError("Gagal memuat voucher");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchVouchers();
   }, []);
 
   return { vouchers, loading, error };

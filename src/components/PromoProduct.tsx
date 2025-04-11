@@ -22,7 +22,15 @@ const PromoProduct = () => {
   // Filter voucher yang valid
   const validVouchers = vouchers.filter((voucher) => voucher.valid);
 
-  if (loading) return <p>Memuat promo...</p>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
+          Memuat data...
+        </p>
+      </div>
+    );
+
   if (error) return <p>{error}</p>;
 
   return (
@@ -47,9 +55,14 @@ const PromoProduct = () => {
           >
             <div className="flex justify-center items-center">
               <img
-                src={voucher.picture} // Pastikan field ini sesuai dengan API
+                src={`${import.meta.env.VITE_API_URL}/storage/${
+                  voucher.picture
+                }`} // Pastikan field ini sesuai dengan API
                 alt={`Promo ${voucher.code}`}
+                loading="lazy"
                 className="h-10 w-full object-cover cursor-pointer"
+                width={3040}
+                height={1708}
                 onClick={() => handleClick(voucher)}
               />
             </div>
