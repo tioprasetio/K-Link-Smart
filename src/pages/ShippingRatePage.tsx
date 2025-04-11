@@ -19,7 +19,7 @@ const ShippingRatePage = () => {
             className="bx bx-arrow-back text-xl text-[#28a154] md:text-2xl cursor-pointer"
             onClick={() => navigate(-1)} // Tambahkan fungsi kembali
           ></i>
-          <h1 className="text-2xl font-bold text-[#28a154]">Biaya Kirim</h1>
+          <h1 className="text-2xl font-bold text-[#28a154]">Shipping Rate</h1>
         </div>
         <div
           className={`${
