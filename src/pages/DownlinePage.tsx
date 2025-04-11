@@ -1,5 +1,5 @@
 // src/pages/DownlinePage.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DownlineCard from "../components/DownlineCard";
 import axios from "axios";
 import NavbarComponent from "../components/Navbar";
