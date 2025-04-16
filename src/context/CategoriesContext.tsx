@@ -9,7 +9,7 @@ const useCategories = () => {
 
   useEffect(() => {
     axios
-      .get<Categories[]>("http://localhost:5000/api/categories")
+      .get<Categories[]>(`${import.meta.env.VITE_APP_API_URL}/api/categories`)
       .then((response) => {
         setCategories(response.data);
         setLoading(false);

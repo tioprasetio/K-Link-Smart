@@ -15,7 +15,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCheckout } from "../context/CheckoutContext";
 
 const ProductDetailPage = () => {
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   const { productSlug } = useParams<{ productSlug: string }>(); // Ambil productSlug dari URL
   const navigate = useNavigate();
   const { products, loading, error } = useProducts(); // Ambil data produk dari custom hook
@@ -47,7 +47,15 @@ const ProductDetailPage = () => {
 
   // Fungsi untuk menambah kuantitas
   const increaseQuantity = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
+    if (product && quantity < product.stock) {
+      setQuantity((prevQuantity) => prevQuantity + 1);
+    } else if (product) {
+      Swal.fire({
+        title: "Stok Tidak Cukup",
+        text: `Jumlah yang Anda pilih melebihi stok tersedia (${product.stock} pcs).`,
+        icon: "warning",
+      });
+    }
   };
 
   // Fungsi untuk mengurangi kuantitas
@@ -57,6 +65,7 @@ const ProductDetailPage = () => {
     }
   };
 
+  // Updated handleAddToCart function in ProductDetailPage.tsx
   const handleAddToCart = async () => {
     if (!isLoggedIn) {
       Swal.fire({
@@ -69,23 +78,47 @@ const ProductDetailPage = () => {
     }
 
     if (product) {
+      if (quantity > product.stock) {
+        Swal.fire({
+          title: "Stok Tidak Cukup",
+          text: `Jumlah yang Anda pilih melebihi stok tersedia (${product.stock} pcs).`,
+          icon: "warning",
+        });
+        return;
+      }
+
+      // Check if the product is already in the cart
+      const existingCartItem = cart.find(
+        (item) => item.product_id === product.id
+      );
+      const totalQuantity = existingCartItem
+        ? existingCartItem.quantity + quantity
+        : quantity;
+
+      // Check if total quantity exceeds stock
+      if (totalQuantity > product.stock) {
+        Swal.fire({
+          title: "Stok Tidak Cukup",
+          text: `Total item di keranjang akan melebihi stok tersedia (${product.stock} pcs).`,
+          icon: "warning",
+        });
+        return;
+      }
+
       try {
-        // Tambahkan produk ke database menggunakan CartContext
         await addToCart(product.id, quantity);
 
-        // Beri notifikasi sukses
         Swal.fire({
           title: "Berhasil!",
           text: "Produk telah ditambahkan ke keranjang.",
           icon: "success",
-          showConfirmButton: false, // Supaya langsung otomatis hilang
-          timer: 1500, // Hilang dalam 1,5 detik
+          showConfirmButton: false,
+          timer: 1500,
         }).then(() => {
-          navigate("/cart"); // Pindah ke halaman cart setelah alert selesai
+          navigate("/cart");
         });
       } catch (error) {
         console.log(error);
-
         Swal.fire({
           title: "Oops...",
           text: "Gagal menambahkan produk ke keranjang.",
@@ -104,19 +137,31 @@ const ProductDetailPage = () => {
         icon: "error",
       });
       navigate("/login");
-    } else if (product) {
+      return;
+    }
+
+    if (product) {
+      if (quantity > product.stock) {
+        Swal.fire({
+          title: "Stok Tidak Cukup",
+          text: `Jumlah yang Anda pilih melebihi stok tersedia (${product.stock} pcs).`,
+          icon: "warning",
+        });
+        return;
+      }
+
       const productToCheckout = {
         id: product.id,
         product_id: product.id,
         name: product.name,
         picture: product.picture,
         harga: product.harga,
+        stock: product.stock,
         quantity: quantity,
         bv: product.bv,
         beratPengiriman: product.beratPengiriman,
       };
 
-      // Tambahkan produk ke selectedProducts di konteks checkout
       setSelectedProducts([productToCheckout]);
       navigate("/checkout");
     }
@@ -292,6 +337,9 @@ const ProductDetailPage = () => {
                       &nbsp;/ pcs
                     </span>
                   </div>
+                  <h1 className="text-[#959595] text-lg">
+                    Stok barang {product.stock}
+                  </h1>
 
                   <div className="flex items-center justify-between pt-4">
                     <h3

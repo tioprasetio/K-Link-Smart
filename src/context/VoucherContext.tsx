@@ -11,7 +11,7 @@ const useVouchers = () => {
     const fetchVouchers = async () => {
       try {
         const response = await axios.get<Voucher[]>(
-          "http://localhost:5000/api/vouchers"
+          `${import.meta.env.VITE_APP_API_URL}/api/vouchers`
         );
         setVouchers(response.data);
       } catch (error) {

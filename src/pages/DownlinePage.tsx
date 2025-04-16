@@ -24,11 +24,14 @@ const DownlinePage: React.FC = () => {
     const fetchDownlines = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/downlines", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_APP_API_URL}/api/downlines`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setDownlines(res.data.downlines);
       } catch (err) {
         console.error("Gagal fetch downlines", err);

@@ -2,6 +2,7 @@ export interface Product {
   id: number;
   name: string;
   harga: number;
+  stock: number;
   rate: string;
   terjual: number;
   pemesananMin: number;

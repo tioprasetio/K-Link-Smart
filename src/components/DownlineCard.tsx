@@ -25,7 +25,9 @@ const DownlineCard: React.FC<Props> = ({ downline }) => {
       <img
         src={
           downline.profile_picture
-            ? `http://localhost:5000/uploads/profile/${downline.profile_picture}`
+            ? `${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+                downline.profile_picture
+              }`
             : "/assets/images/health_accessories.png"
         }
         alt={downline.name}

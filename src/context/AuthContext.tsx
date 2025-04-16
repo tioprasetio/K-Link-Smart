@@ -78,9 +78,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       try {
-        const response = await axios.get("http://localhost:5000/api/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_URL}/api/me`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setUser(response.data.user);
         setIsLoggedIn(true);
@@ -148,7 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const formData = createFormData(userData);
       const response = await axios.post(
-        "http://localhost:5000/api/register",
+        `${import.meta.env.VITE_APP_API_URL}/api/register`,
         formData,
         {
           headers: {
@@ -165,26 +168,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updateProfile = async (formData: FormData) => {
     const token = localStorage.getItem("token");
-    await axios.put("http://localhost:5000/api/update", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    await axios.put(
+      `${import.meta.env.VITE_APP_API_URL}/api/update`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     // Refresh user data setelah update
-    const response = await axios.get("http://localhost:5000/api/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_API_URL}/api/me`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     setUser(response.data.user);
   };
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/api/login`,
+        {
+          email,
+          password,
+        }
+      );
 
       const token = response.data.token;
       localStorage.setItem("token", token);

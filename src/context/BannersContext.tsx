@@ -9,7 +9,7 @@ const useBanners = () => {
 
   useEffect(() => {
     axios
-      .get<Banners[]>("http://localhost:5000/api/banners")
+      .get<Banners[]>(`${import.meta.env.VITE_APP_API_URL}/api/banners`)
       .then((response) => {
         setBanners(response.data);
         setLoading(false);

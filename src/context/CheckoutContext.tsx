@@ -11,6 +11,7 @@ interface Product {
   product_id: number;
   name: string;
   harga: number;
+  stock: number;
   quantity: number;
   picture: string;
   bv: number;

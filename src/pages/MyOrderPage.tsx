@@ -4,12 +4,15 @@ import axios from "axios";
 import { formatRupiah } from "../utils/formatCurrency";
 import NavbarComponent from "../components/Navbar";
 import { useDarkMode } from "../context/DarkMode";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import { useCheckout } from "../context/CheckoutContext";
 
 const MyOrderPage = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { setSelectedProducts } = useCheckout();
   const [orders, setOrders] = useState<
     {
       order_id: string;
@@ -31,7 +34,9 @@ const MyOrderPage = () => {
     if (user) {
       console.log("User Data:", user);
       axios
-        .get(`http://localhost:5000/api/transactions/user/${user.id}`)
+        .get(
+          `${import.meta.env.VITE_APP_API_URL}/api/transactions/user/${user.id}`
+        )
         .then((response) => {
           console.log("Orders Response:", response.data); // Cek data API di console
           setOrders(response.data.data);
@@ -42,6 +47,54 @@ const MyOrderPage = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    // Bersihkan selectedProducts setelah user masuk ke halaman pesanan
+    localStorage.removeItem("selectedProducts");
+    setSelectedProducts([]);
+  }, []);
+
+
+  const handleOrderComplete = async (order_id: string) => {
+    if (!user) return;
+
+    const confirmResult = await Swal.fire({
+      title: "Apakah kamu yakin?",
+      text: "Pastikan kamu sudah menerima barang karena pesanan akan dianggap selesai.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, selesai",
+      cancelButtonText: "Batal",
+    });
+
+    if (confirmResult.isConfirmed) {
+      try {
+        await axios.post(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/transactions/${order_id}/complete`
+        );
+
+        // Ambil ulang data pesanan
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_URL}/api/transactions/user/${user.id}`
+        );
+        setOrders(response.data.data);
+
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Pesanan telah diselesaikan.",
+          icon: "success",
+        });
+      } catch (error) {
+        console.error("❌ Gagal menyelesaikan pesanan:", error);
+        Swal.fire({
+          title: "Gagal!",
+          text: "Terjadi kesalahan saat menyelesaikan pesanan.",
+          icon: "error",
+        });
+      }
+    }
+  };
 
   return (
     <>
@@ -91,32 +144,40 @@ const MyOrderPage = () => {
                   </div>
                   <ul className="mt-2 space-y-2">
                     {order.products.map((item) => (
-                      <li key={item.id} className="p-3 rounded-lg flex">
-                        <img
-                          src={`${import.meta.env.VITE_API_URL}/storage/${
-                            item.picture
-                          }`}
-                          alt={item.name}
-                          className="h-16 w-16 rounded-md object-cover mr-3"
-                          loading="lazy"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col gap-1">
-                              <p className="font-semibold truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
-                                {item.name}
-                              </p>
-                              {/* Harga per item */}
-                              <p className="text-sm">
-                                {formatRupiah(item.harga)}
-                              </p>
-                            </div>
-                            {/* Quantity dan Subtotal (sejajar ke kanan) */}
-                            <div className="flex flex-col items-end">
-                              <span className="text-sm">x{item.quantity}</span>
-                              <span className="font-medium">
-                                {formatRupiah(item.harga * item.quantity)}
-                              </span>
+                      <li key={item.id} className="py-2">
+                        <div
+                          className={`${
+                            isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+                          } flex p-2 rounded-lg`}
+                        >
+                          <img
+                            src={`${import.meta.env.VITE_API_URL}/storage/${
+                              item.picture
+                            }`}
+                            alt={item.name}
+                            className="h-16 w-16 rounded-md object-cover mr-3"
+                            loading="lazy"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <div className="flex flex-col gap-1">
+                                <p className="font-semibold truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
+                                  {item.name}
+                                </p>
+                                {/* Harga per item */}
+                                <p className="text-sm">
+                                  {formatRupiah(item.harga)}
+                                </p>
+                              </div>
+                              {/* Quantity dan Subtotal (sejajar ke kanan) */}
+                              <div className="flex flex-col items-end">
+                                <span className="text-sm">
+                                  x{item.quantity}
+                                </span>
+                                <span className="font-medium">
+                                  {formatRupiah(item.harga * item.quantity)}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -144,6 +205,23 @@ const MyOrderPage = () => {
                     >
                       Pembayaran {order.status}
                     </span>
+                  </div>
+
+                  <div className="flex flex-row mt-4 gap-4 text-sm">
+                    {order.shipment_status === "dikirim" && (
+                      <button
+                        onClick={() => handleOrderComplete(order.order_id)}
+                        className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition"
+                      >
+                        Pesanan Diterima
+                      </button>
+                    )}
+                    <Link
+                      to={`/my-order-detail/${order.order_id}`}
+                      className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition"
+                    >
+                      Detail Pesanan
+                    </Link>
                   </div>
                 </div>
               </div>

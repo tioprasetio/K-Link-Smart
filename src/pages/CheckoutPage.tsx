@@ -22,6 +22,7 @@ const CheckoutPage = () => {
   // Receiver information
   const [receiverName, setReceiverName] = useState(user?.name || "");
   const [receiverPhone, setReceiverPhone] = useState(user?.no_hp || "");
+  const [receiverEmail, setReceiverEmail] = useState(user?.email || "");
   const [receiverAddress, setReceiverAddress] = useState(user?.alamat || "");
   const [useDifferentReceiver, setUseDifferentReceiver] = useState(false);
 
@@ -41,6 +42,8 @@ const CheckoutPage = () => {
   );
   const [isLoadingMethods, setIsLoadingMethods] = useState(false);
   const [methodsError, setMethodsError] = useState<string | null>(null);
+
+  const [paymentMethod, setPaymentMethod] = useState("online"); // 'online' atau 'cod'
 
   // Shipping options
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
@@ -96,6 +99,7 @@ const CheckoutPage = () => {
     if (user) {
       setReceiverName(user.name || "");
       setReceiverPhone(user.no_hp || "");
+      setReceiverEmail(user.email || "");
       setReceiverAddress(user.alamat || "");
     }
   }, [user]);
@@ -110,7 +114,7 @@ const CheckoutPage = () => {
     setIsSearching(true);
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/search-destination",
+        `${import.meta.env.VITE_APP_API_URL}/api/search-destination`,
         {
           params: { keyword: searchQuery },
         }
@@ -147,7 +151,7 @@ const CheckoutPage = () => {
 
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/shipping-methods",
+          `${import.meta.env.VITE_APP_API_URL}/api/shipping-methods`,
           {
             params: {
               receiver_destination_id: selectedDestination.id,
@@ -204,7 +208,7 @@ const CheckoutPage = () => {
       setIsLoadingShipping(true);
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/calculate-shipping",
+          `${import.meta.env.VITE_APP_API_URL}/api/calculate-shipping`,
           {
             params: {
               shipper_destination_id: "17579",
@@ -254,7 +258,7 @@ const CheckoutPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/vouchers/${voucherCode}`
+        `${import.meta.env.VITE_APP_API_URL}/api/vouchers/${voucherCode}`
       );
 
       if (response.data.valid) {
@@ -304,23 +308,55 @@ const CheckoutPage = () => {
       return;
     }
 
+    const overStockProducts = selectedProducts.filter(
+      (product) => product.quantity > product.stock
+    );
+
+    if (overStockProducts.length > 0) {
+      const overList = overStockProducts
+        .map(
+          (p) => `${p.name} (Beli: ${p.quantity}, Stok tersedia: ${p.stock})`
+        )
+        .join("<br>");
+
+      Swal.fire({
+        icon: "error",
+        title: "Stok tidak mencukupi!",
+        html: `Beberapa produk melebihi stok:<br><br>${overList}`,
+      });
+      return;
+    }
+
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/create-transaction",
+        `${import.meta.env.VITE_APP_API_URL}/api/create-transaction`,
         {
           userId: user?.id,
           receiver_name: receiverName,
           receiver_phone: receiverPhone,
+          receiver_email: receiverEmail,
           receiver_address: `${receiverAddress} (${selectedDestination?.label})`,
           gross_amount: totalHarga,
           voucher_code: voucherCode,
           shipping_cost: selectedOption.shipping_cost,
           shipping_method: `${selectedMethod?.name} - ${selectedOption.service_name}`,
+          payment_method: paymentMethod,
           products: selectedProducts,
         }
       );
 
-      window.location.href = response.data.transaction.redirect_url;
+      if (paymentMethod === "cod") {
+        Swal.fire({
+          title: "Pesanan COD Berhasil!",
+          text: "Pesanan Anda telah tercatat. Silahkan tunggu barang dikirim.",
+          icon: "success",
+        }).then(() => {
+          navigate("/my-order"); // Redirect ke halaman pesanan
+        });
+      } else {
+        // Redirect ke Midtrans untuk pembayaran online
+        window.location.href = response.data.transaction.redirect_url;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error creating transaction:", error);
@@ -387,6 +423,7 @@ const CheckoutPage = () => {
               if (!e.target.checked) {
                 setReceiverName(user?.name || "");
                 setReceiverPhone(user?.no_hp || "");
+                setReceiverEmail(user?.email || "");
                 setReceiverAddress(user?.alamat || "");
               }
             }}
@@ -676,6 +713,77 @@ const CheckoutPage = () => {
         )}
       </div>
 
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg flex mt-4 flex-col gap-2`}
+      >
+        <div className="mb-4">
+          <h2 className="text-lg font-bold mb-3">Metode Pembayaran</h2>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div
+              className={`flex-1 p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
+                paymentMethod === "online"
+                  ? isDarkMode
+                    ? "border-2 border-green-500 bg-[#1e3a26]"
+                    : "border-2 border-green-500 bg-green-50"
+                  : isDarkMode
+                  ? "border border-gray-600 bg-[#353535]"
+                  : "border border-gray-300"
+              }`}
+              onClick={() => setPaymentMethod("online")}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    paymentMethod === "online"
+                      ? "border-green-500"
+                      : "border-gray-400"
+                  }`}
+                >
+                  {paymentMethod === "online" && (
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  )}
+                </div>
+                <p className="font-semibold">Pembayaran Online</p>
+              </div>
+              <p className="text-sm ml-7">Transfer Bank, E-Wallet, QRIS, dll</p>
+            </div>
+
+            <div
+              className={`flex-1 p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
+                paymentMethod === "cod"
+                  ? isDarkMode
+                    ? "border-2 border-green-500 bg-[#1e3a26]"
+                    : "border-2 border-green-500 bg-green-50"
+                  : isDarkMode
+                  ? "border border-gray-600 bg-[#353535]"
+                  : "border border-gray-300"
+              }`}
+              onClick={() => setPaymentMethod("cod")}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    paymentMethod === "cod"
+                      ? "border-green-500"
+                      : "border-gray-400"
+                  }`}
+                >
+                  {paymentMethod === "cod" && (
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  )}
+                </div>
+                <p className="font-semibold">COD (Bayar di Tempat)</p>
+              </div>
+              <p className="text-sm ml-7">Bayar saat barang diterima</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Rincian Pembayaran */}
       <div
         className={`${
@@ -715,7 +823,7 @@ const CheckoutPage = () => {
           isDarkMode
             ? "bg-[#404040] text-[#FFFFFF]"
             : "bg-[#FFFFFF] text-[#353535]"
-        } fixed bottom-0 left-0 w-full p-4 shadow-xl flex flex-col gap-2`}
+        } fixed bottom-0 left-0 w-full p-4 shadow-xl flex flex-col gap-2 z-999`}
       >
         <h2 className="text-lg font-semibold">
           Total: {formatRupiah(totalHarga)}

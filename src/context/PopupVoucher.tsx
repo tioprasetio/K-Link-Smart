@@ -11,7 +11,7 @@ const usePopupVoucher = () => {
     const fetchPopupVoucher = async () => {
       try {
         const response = await axios.get<PopupVoucher[]>(
-          "http://localhost:5000/api/popup-voucher"
+          `${import.meta.env.VITE_APP_API_URL}/api/popup-voucher`
         );
         setPopupVoucher(response.data);
       } catch (error) {

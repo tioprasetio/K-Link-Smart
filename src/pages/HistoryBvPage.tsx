@@ -44,11 +44,14 @@ const HistoryBvPage = () => {
     const fetchBVHistory = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/history-bv", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_API_URL}/api/history-bv`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const data = await response.json();
 

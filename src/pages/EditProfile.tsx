@@ -81,7 +81,6 @@ const EditProfile = () => {
     }
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -103,7 +102,6 @@ const EditProfile = () => {
       setError("Gagal menyimpan perubahan.");
     }
   };
-
 
   if (loading) {
     return (
@@ -155,7 +153,10 @@ const EditProfile = () => {
               </span>
             </Link>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-2 space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-2 space-y-4"
+          >
             <div>
               <label
                 className={`${
@@ -168,7 +169,9 @@ const EditProfile = () => {
               <div className="flex gap-4 items-center justify-center">
                 {user?.profile_picture && !profilePicture && (
                   <img
-                    src={`http://localhost:5000/uploads/profile/${user.profile_picture}`}
+                    src={`${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+                      user.profile_picture
+                    }`}
                     alt="Current Profile"
                     className="w-20 h-20 rounded-lg"
                   />

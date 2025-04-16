@@ -10,7 +10,7 @@ const useProducts = () => {
 
   useEffect(() => {
     axios
-      .get<Product[]>("http://localhost:5000/api/products")
+      .get<Product[]>(`${import.meta.env.VITE_APP_API_URL}/api/products`)
       .then((response) => {
         setProducts(response.data);
         setLoading(false);

@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router";
 import NavbarComponent from "../components/Navbar";
 import { useDarkMode } from "../context/DarkMode";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,11 @@ const ProfilePage = () => {
     email: "",
   });
   const navigate = useNavigate();
+  const [orders, setOrders] = useState<
+    {
+      shipment_status: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     if (user) {
@@ -34,6 +40,27 @@ const ProfilePage = () => {
       });
     }
   }, [user]); // Hanya dijalankan ketika `user` berubah
+
+  useEffect(() => {
+    if (user) {
+      console.log("User Data:", user);
+      axios
+        .get(
+          `${import.meta.env.VITE_APP_API_URL}/api/transactions/user/${user.id}`
+        )
+        .then((response) => {
+          console.log("Orders Response:", response.data); // Cek data API di console
+          setOrders(response.data.data);
+        })
+        .catch((error) => {
+          console.error("❌ Fetch Orders Failed:", error);
+        });
+    }
+  }, [user]);
+
+  const totalPesanan = useMemo(() => {
+    return orders.filter((order) => order.shipment_status === "dikirim").length;
+  }, [orders]);
 
   // Tampilkan loading hanya jika autentikasi belum dicek
   if (loading) {
@@ -115,7 +142,12 @@ const ProfilePage = () => {
               : "bg-[#FFFFFF] text-[#353535]"
           } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
         >
-          Pesanan Saya
+          <div className="flex flex-col gap-2">
+            <span className="font-bold ">Pesanan Saya</span>
+            <span className="font-semibold text-[#959595]">
+              {totalPesanan} Sedang Dikirim
+            </span>
+          </div>
           <Link to="/my-order">
             <i className="bx bx-right-arrow-alt text-2xl"></i>
           </Link>
@@ -126,7 +158,7 @@ const ProfilePage = () => {
             isDarkMode
               ? "bg-[#404040] text-[#f0f0f0]"
               : "bg-[#FFFFFF] text-[#353535]"
-          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
+          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
         >
           History Transaksi BV
           <Link to="/history-bv">
@@ -139,7 +171,7 @@ const ProfilePage = () => {
             isDarkMode
               ? "bg-[#404040] text-[#f0f0f0]"
               : "bg-[#FFFFFF] text-[#353535]"
-          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
+          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
         >
           Info Jaringan
           <Link to="/downline">

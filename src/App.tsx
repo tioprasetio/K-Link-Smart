@@ -32,6 +32,7 @@ import ReplacemenetPage from "./pages/ReplacementPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import HowToOrderPage from "./pages/HowToOrder";
+import MyOrderDetailPage from "./pages/MyOrderDetailPage";
 
 function App() {
   // const location = useLocation(); // Mengambil lokasi saat ini di React Router
@@ -88,6 +89,10 @@ function App() {
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/history-bv" element={<HistoryBvPage />} />
                 <Route path="/downline" element={<DownlinePage />} />
+                <Route
+                  path="/my-order-detail/:order_id"
+                  element={<MyOrderDetailPage />}
+                />
               </Route>
 
               {/* Dynamic Route */}

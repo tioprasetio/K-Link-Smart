@@ -48,7 +48,7 @@ const PaymentCallbackPage = () => {
   const fetchTransactionDetails = async (orderId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/transactions/${orderId}`
+        `${import.meta.env.VITE_APP_API_URL}/api/transactions/${orderId}`
       );
       setTransactionDetails(response.data.data); // Perhatikan responsenya, pastikan sesuai struktur
     } catch (error) {

@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { getEmailFromToken, isUserLoggedIn } from "../utils/authUtils";
+import Swal from "sweetalert2";
 
 interface CartItem {
   id: number;
   product_id: number;
   name: string;
+  stock: number;
   harga: number;
   picture: string;
   quantity: number;
@@ -51,7 +53,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/cart?email=${userEmail}`
+        `${import.meta.env.VITE_APP_API_URL}/api/cart?email=${userEmail}`
       );
       setCart(response.data); // Perbarui state cart
     } catch (error) {
@@ -65,8 +67,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    const product = cart.find((item) => item.product_id === productId);
+    if (product && quantity > product.stock) {
+      Swal.fire(
+        "Error",
+        "Jumlah yang dibeli melebihi stok yang tersedia",
+        "error"
+      );
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:5000/api/cart", {
+      await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/cart`, {
         user_email: userEmail,
         product_id: productId,
         quantity,
@@ -84,7 +96,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      await axios.put("http://localhost:5000/api/cart/decrease", {
+      await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/cart/decrease`, {
         user_email: userEmail,
         product_id: productId,
         quantity,
@@ -97,7 +109,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const removeFromCart = async (cartId: number) => {
     try {
-      await axios.delete(`http://localhost:5000/api/cart/${cartId}`);
+      await axios.delete(
+        `${import.meta.env.VITE_APP_API_URL}/api/cart/${cartId}`
+      );
       fetchCart(); // Refresh data keranjang
     } catch (error) {
       console.error("Error removing from cart:", error);
@@ -112,7 +126,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       // Loop melalui selectedProducts dan hapus dari cart
       for (const product of selectedProducts) {
-        await axios.delete(`http://localhost:5000/api/cart/${product.id}`);
+        await axios.delete(
+          `${import.meta.env.VITE_APP_API_URL}/api/cart/${product.id}`
+        );
       }
 
       // Refresh data keranjang setelah menghapus item

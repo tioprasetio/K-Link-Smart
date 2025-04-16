@@ -64,8 +64,27 @@ const CartPage = () => {
 
   // Fungsi untuk menambah quantity
   const handleIncreaseQuantity = async (productId: number) => {
-    await addToCart(productId, 1); // Tambah quantity
-    await fetchCart(); // Refresh data keranjang
+    // Cari data produk dari cart
+    const product = cart.find((item) => item.product_id === productId);
+
+    if (!product) {
+      console.error("Produk tidak ditemukan di keranjang");
+      return;
+    }
+
+    // Validasi apakah quantity saat ini + 1 melebihi stok
+    if (product.quantity + 1 > product.stock) {
+      Swal.fire({
+        title: "Stok Tidak Cukup",
+        text: "Jumlah yang ingin Anda beli melebihi stok yang tersedia.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    // Jika valid, tambahkan quantity
+    await addToCart(productId, 1);
+    await fetchCart();
   };
 
   // Hitung total harga dari item yang dipilih
@@ -90,6 +109,20 @@ const CartPage = () => {
         "Pilih minimal satu produk untuk checkout.",
         "warning"
       );
+      return;
+    }
+
+    const outOfStockItems = selectedItemsData.filter((item) => item.stock <= 0);
+
+    if (outOfStockItems.length > 0) {
+      const productList = outOfStockItems
+        .map((item) => `• ${item.name} (Stok habis)`)
+        .join("<br>");
+      Swal.fire({
+        icon: "error",
+        title: "Stok Kosong!",
+        html: `Produk berikut stoknya habis:<br><br>${productList}`,
+      });
       return;
     }
 
