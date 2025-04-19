@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 
 const NavbarComponent = () => {
   const { isDarkMode, setIsDarkMode } = useDarkMode();
-  const { cart, clearCart } = useCart();
+  const { cart } = useCart();
 
   const { isLoggedIn, setIsLoggedIn, logout } = useAuth();
 
@@ -48,7 +48,6 @@ const NavbarComponent = () => {
       if (result.isConfirmed) {
         logout(); // Panggil fungsi logoutUser
         setIsLoggedIn(false); // Update state loggedIn
-        clearCart();
         window.location.assign("/login");
       }
     });

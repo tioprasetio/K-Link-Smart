@@ -1,7 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { getEmailFromToken, isUserLoggedIn } from "../utils/authUtils";
+import { getEmailFromToken } from "../utils/authUtils";
 import Swal from "sweetalert2";
+
+const checkIsLoggedIn = () => {
+  const token = localStorage.getItem("token");
+  return !!token; // Mengembalikan true jika token ada, false jika tidak ada
+};
 
 interface CartItem {
   id: number;
@@ -40,8 +45,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const userEmail = getEmailFromToken();
   // Ambil data keranjang saat komponen dimuat atau saat userEmail berubah
   useEffect(() => {
-    if (isUserLoggedIn() && userEmail) {
-      console.log("Fetching cart for user:", userEmail); // Debugging
+    const isLoggedIn = checkIsLoggedIn();
+
+    if (isLoggedIn && userEmail) {
+      console.log("Fetching cart for user:", userEmail);
       fetchCart();
     }
   }, [userEmail]);
@@ -121,6 +128,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const clearCart = () => {
     setCart([]); // Kosongkan cart
   };
+
+  // Tambahkan useEffect untuk mendengarkan event logout
+  useEffect(() => {
+    const handleUserLogout = () => {
+      clearCart(); // Panggil fungsi clearCart saat user logout
+    };
+
+    window.addEventListener("userLoggedOut", handleUserLogout);
+
+    return () => {
+      window.removeEventListener("userLoggedOut", handleUserLogout);
+    };
+  }, []);
 
   const clearCheckedOutItems = async (selectedProducts: CartItem[]) => {
     try {

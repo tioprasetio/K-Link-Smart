@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { loginUser } from "../api/authService";
 import { Link, useNavigate } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -13,18 +12,15 @@ const Login = () => {
   const navigate = useNavigate();
 
   const { fetchCart } = useCart();
-  const { isLoggedIn, setIsLoggedIn, setUser, loading } = useAuth();
+  const { login, isLoggedIn, setIsLoggedIn, setUser, loading } = useAuth();
   const { isDarkMode } = useDarkMode();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await loginUser({ email, password });
+      const data = await login(email, password);
 
       console.log("🟢 Login berhasil, token:", data.token); // Debugging
-
-      // Simpan token ke localStorage
-      localStorage.setItem("token", data.token);
 
       setUser(data.user); // 🔥 Update user di global state
       setIsLoggedIn(true); // 🔥 Update status login di AuthContext

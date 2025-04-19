@@ -53,7 +53,6 @@ const MyOrderPage = () => {
     setSelectedProducts([]);
   }, []);
 
-
   const handleOrderComplete = async (order_id: string) => {
     if (!user) return;
 
@@ -104,7 +103,7 @@ const MyOrderPage = () => {
           isDarkMode
             ? "bg-[#140C00] text-[#FFFFFF]"
             : "bg-[#f4f6f9] text-[#353535]"
-        } p-6 pt-24 sm:pt-28 w-full min-h-screen pb-10`}
+        } p-6 pt-24 sm:pt-28 w-full min-h-screen pb-10 max-w-4xl mx-auto`} // Klo mau full hapus max-w-4xl mx-auto
       >
         <div className="flex items-center gap-2 mb-4">
           <i
@@ -142,9 +141,9 @@ const MyOrderPage = () => {
                       {order.shipment_status}
                     </span>
                   </div>
-                  <ul className="mt-2 space-y-2">
+                  <ul className="mt-2 space-y-1">
                     {order.products.map((item) => (
-                      <li key={item.id} className="py-2">
+                      <li key={item.id} className="py-1">
                         <div
                           className={`${
                             isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
@@ -211,14 +210,14 @@ const MyOrderPage = () => {
                     {order.shipment_status === "dikirim" && (
                       <button
                         onClick={() => handleOrderComplete(order.order_id)}
-                        className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition"
+                        className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition cursor-pointer"
                       >
                         Pesanan Diterima
                       </button>
                     )}
                     <Link
                       to={`/my-order-detail/${order.order_id}`}
-                      className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition"
+                      className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition cursor-pointer"
                     >
                       Detail Pesanan
                     </Link>

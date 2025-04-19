@@ -18,8 +18,3 @@ export const getEmailFromToken = (): string | null => {
     return null;
   }
 };
-
-export const isUserLoggedIn = (): boolean => {
-  const token = localStorage.getItem("token");
-  return !!token; // Mengembalikan `true` jika token ada, `false` jika tidak
-};

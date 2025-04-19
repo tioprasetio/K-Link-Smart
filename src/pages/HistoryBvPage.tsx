@@ -88,7 +88,7 @@ const HistoryBvPage = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140C00] text-white" : "bg-[#f4f6f9] text-[#353535]"
-        } p-6 pt-24 sm:pt-28 w-full min-h-screen pb-10`}
+        } p-6 pt-24 sm:pt-28 w-full min-h-screen pb-10 max-w-4xl mx-auto`}
       >
         <div className="flex items-center gap-2 mb-4">
           <i

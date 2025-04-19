@@ -9,6 +9,7 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     no_hp: "",
     alamat: "",
     jenis_kelamin: "L", // Default "L" (Laki-laki)
@@ -58,6 +59,12 @@ const Register = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Konfirmasi password tidak cocok.");
+      return;
+    }
+
     try {
       await register({
         ...formData,
@@ -194,6 +201,19 @@ const Register = () => {
             name="password"
             placeholder="Password"
             value={formData.password}
+            onChange={handleChange}
+            required
+            className={`w-full p-4 border-none rounded-xl ${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0]"
+                : "bg-[#f0f0f0] text-[#353535]"
+            }`}
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
             onChange={handleChange}
             required
             className={`w-full p-4 border-none rounded-xl ${

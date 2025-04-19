@@ -51,8 +51,8 @@ function App() {
 
   return (
     <>
-      <CartProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <CartProvider>
           <CheckoutProvider>
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -104,8 +104,8 @@ function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </CheckoutProvider>
-        </AuthProvider>
-      </CartProvider>
+        </CartProvider>
+      </AuthProvider>
     </>
   );
 }

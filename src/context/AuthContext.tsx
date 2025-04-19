@@ -7,7 +7,6 @@ import {
 } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { useCart } from "./CartContext";
 import Swal from "sweetalert2";
 
 interface User {
@@ -19,13 +18,17 @@ interface User {
   alamat?: string;
   jenis_kelamin?: string;
   tanggal_lahir?: string;
+  leader_id?: string;
   profile_picture?: File | string | null;
 }
 
 interface AuthContextType {
   user: User | null;
   register: (userData: User) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ token: string; user: User }>;
   updateProfile: (userData: FormData) => Promise<void>;
   logout: () => void;
   isLoggedIn: boolean;
@@ -40,7 +43,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const { clearCart } = useCart();
 
   // Helper function untuk membuat FormData
   const createFormData = (userData: Partial<User>): FormData => {
@@ -199,12 +201,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       );
 
-      const token = response.data.token;
+      const { token, user } = response.data;
       localStorage.setItem("token", token);
 
-      setUser(response.data.user);
+      setUser(user);
       setIsLoggedIn(true);
       setLoading(false);
+
+      return { token, user };
     } catch (error) {
       console.log("❌ Login failed:", error);
       throw new Error("Login failed");
@@ -212,7 +216,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    clearCart();
+    // window.dispatchEvent(new Event("userLoggedOut"));
     localStorage.removeItem("token"); // Hapus token yang sudah expired
     setIsLoggedIn(false);
     setUser(null);

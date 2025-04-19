@@ -24,6 +24,7 @@ type OrderDetail = {
   shipping_cost: number;
   shipping_method: string;
   shipment_status: string;
+  payment_method: string;
   discount: number;
   products: OrderProduct[];
 };
@@ -71,7 +72,7 @@ export default function MyOrderDetailPage() {
           isDarkMode
             ? "bg-[#140C00] text-[#FFFFFF]"
             : "bg-[#f4f6f9] text-[#353535]"
-        } pt-24 sm:pt-28 p-6 w-full min-h-screen pb-10`}
+        } pt-24 sm:pt-28 p-6 w-full min-h-screen pb-10 max-w-4xl mx-auto`}
       >
         <div className="flex items-center gap-2 mb-4">
           <i
@@ -98,12 +99,31 @@ export default function MyOrderDetailPage() {
             isDarkMode ? "bg-[#404040]" : "bg-[#FFFFFF]"
           } rounded-b-lg shadow px-4 py-4 mb-4`}
         >
-          <h3 className="font-bold text-base">
-            <i className="bx bx-package"></i> Info Pengiriman
-          </h3>
-          <div className="flex justify-between">
-            <span>{data.shipping_method}</span>
-            <span>{formatRupiah(data.shipping_cost)}</span>
+          <div
+            className={`${
+              isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+            } flex p-2 rounded-lg flex-col`}
+          >
+            <h3 className="font-bold text-base">
+              <i className="bx bx-package"></i> Info Pengiriman
+            </h3>
+            <div className="flex justify-between">
+              <span>{data.shipping_method}</span>
+              <span>{formatRupiah(data.shipping_cost)}</span>
+            </div>
+          </div>
+
+          <div
+            className={`${
+              isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+            } flex p-2 rounded-lg flex-col mt-4`}
+          >
+            <h3 className="font-bold text-base">
+              <i className="bx bx-wallet"></i> Metode Pembayaran
+            </h3>
+            <div className="flex">
+              <span>Pembayaran - {data.payment_method}</span>
+            </div>
           </div>
         </div>
 
