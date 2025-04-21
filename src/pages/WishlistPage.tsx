@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useWishlist } from "../context/WishlistContext";
-import CardWishlist from "../components/CardWishList";
+import CardWishlist from "../components/CardWishlist";
+
 
 const WishlistPage = () => {
   const { wishlistItems, fetchWishlist, loading, removeFromWishlist } =
