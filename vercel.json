@@ -1,4 +1,9 @@
 {
-  "rewrites": [{ "source": "/", "destination": "/index.html" }],
-  "framework": "vite"
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }
