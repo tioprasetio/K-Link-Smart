@@ -220,7 +220,7 @@ const CartPage = () => {
                       onClick={() =>
                         handleDecreaseQuantity(item.id, item.product_id)
                       }
-                      className="text-gray-400 dark:text-gray-300"
+                      className="text-gray-400 dark:text-gray-300 cursor-pointer"
                     >
                       <i className="bx bx-minus-circle text-2xl"></i>
                     </button>
@@ -230,7 +230,7 @@ const CartPage = () => {
                     <button
                       type="button"
                       onClick={() => handleIncreaseQuantity(item.product_id)}
-                      className="text-gray-400 dark:text-gray-300"
+                      className="text-gray-400 dark:text-gray-300 cursor-pointer"
                     >
                       <i className="bx bx-plus-circle text-2xl"></i>
                     </button>

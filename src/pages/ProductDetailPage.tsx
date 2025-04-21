@@ -13,6 +13,7 @@ import NavbarComponent from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useCheckout } from "../context/CheckoutContext";
+import { useWishlist } from "../context/WishlistContext";
 
 const ProductDetailPage = () => {
   const { addToCart, cart } = useCart();
@@ -22,9 +23,11 @@ const ProductDetailPage = () => {
   const { isDarkMode } = useDarkMode();
   const { isLoggedIn } = useAuth();
   const { setSelectedProducts } = useCheckout();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   const [quantity, setQuantity] = useState(1); // State untuk kuantitas produk
   const [product, setProduct] = useState<Product | null>(null); // State untuk menyimpan produk yang dipilih
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   // Ekstrak ID dari productSlug
   const productId = productSlug ? parseInt(productSlug.split("-")[0]) : null;
@@ -44,6 +47,58 @@ const ProductDetailPage = () => {
       }
     }
   }, [products, productId, navigate]);
+
+  // Handle toggle wishlist
+  const handleToggleWishlist = async () => {
+    if (!isLoggedIn) {
+      Swal.fire({
+        title: "Oops...",
+        text: "Anda harus login terlebih dahulu!",
+        icon: "error",
+      }).then(() => {
+        navigate("/login");
+      });
+      return;
+    }
+
+    if (!product) return;
+
+    try {
+      setWishlistLoading(true);
+
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id);
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Produk dihapus dari wishlist.",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        await addToWishlist(product.id);
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Produk ditambahkan ke wishlist.",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("Error toggling wishlist:", error);
+      Swal.fire({
+        title: "Oops...",
+        text:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan saat memproses wishlist.",
+        icon: "error",
+      });
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   // Fungsi untuk menambah kuantitas
   const increaseQuantity = () => {
@@ -215,7 +270,27 @@ const ProductDetailPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 md:gap-3 xl:gap-4 md:pt-5">
             {/* Gambar Produk */}
             <div className="flex flex-col">
-              <section className="bg-[#ffffff] rounded-lg p-4 mb-3 xl:mb-4">
+              <section className="bg-[#ffffff] rounded-lg p-4 mb-3 xl:mb-4 relative">
+                {/* Tombol wishlist di sudut kanan atas gambar */}
+                <button
+                  onClick={handleToggleWishlist}
+                  disabled={wishlistLoading}
+                  className="absolute top-4 right-4 z-10 bg-white/70 hover:bg-white/90 p-2 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center"
+                  aria-label={
+                    isInWishlist(product.id)
+                      ? "Hapus dari wishlist"
+                      : "Tambahkan ke wishlist"
+                  }
+                >
+                  {wishlistLoading ? (
+                    <i className="bx bx-loader-alt animate-spin text-2xl text-gray-500"></i>
+                  ) : isInWishlist(product.id) ? (
+                    <i className="bx bxs-heart text-2xl text-red-500"></i>
+                  ) : (
+                    <i className="bx bx-heart text-2xl text-gray-500 hover:text-red-500"></i>
+                  )}
+                </button>
+
                 <img
                   src={`${import.meta.env.VITE_API_URL}/storage/${
                     product.picture

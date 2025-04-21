@@ -33,6 +33,8 @@ import DeliveryPage from "./pages/DeliveryPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import HowToOrderPage from "./pages/HowToOrder";
 import MyOrderDetailPage from "./pages/MyOrderDetailPage";
+import { WishlistProvider } from "./context/WishlistContext";
+import WishlistPage from "./pages/WishlistPage";
 
 function App() {
   // const location = useLocation(); // Mengambil lokasi saat ini di React Router
@@ -52,59 +54,62 @@ function App() {
   return (
     <>
       <AuthProvider>
-        <CartProvider>
-          <CheckoutProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/about-us" element={<AboutUsPage />} />
-              <Route path="/why" element={<WhyUsPage />} />
-              <Route path="/shipping-rate" element={<ShippingRatePage />} />
-              <Route path="/replacement" element={<ReplacemenetPage />} />
-              <Route path="/delivery" element={<DeliveryPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/how-to-order" element={<HowToOrderPage />} />
-              <Route element={<GuestRoute />}>
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-              </Route>
-              <Route path="/all-product" element={<AllProduct />} />
-              <Route path="/best-sellers" element={<BestSellers />} />
-              <Route path="/voucher" element={<VoucherPage />} />
-              {/* Dynamic Route */}
-              <Route
-                path="/voucher/:voucherSlug"
-                element={<VoucherDetailPage />}
-              />
-              <Route path="/category/:category" element={<CategoryPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route
-                path="/payment-callback"
-                element={<PaymentCallbackPage />}
-              />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/my-order" element={<MyOrderPage />} />
-                <Route path="/edit-profile" element={<EditProfile />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/history-bv" element={<HistoryBvPage />} />
-                <Route path="/downline" element={<DownlinePage />} />
+        <WishlistProvider>
+          <CartProvider>
+            <CheckoutProvider>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/about-us" element={<AboutUsPage />} />
+                <Route path="/why" element={<WhyUsPage />} />
+                <Route path="/shipping-rate" element={<ShippingRatePage />} />
+                <Route path="/replacement" element={<ReplacemenetPage />} />
+                <Route path="/delivery" element={<DeliveryPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/how-to-order" element={<HowToOrderPage />} />
+                <Route element={<GuestRoute />}>
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+                </Route>
+                <Route path="/all-product" element={<AllProduct />} />
+                <Route path="/best-sellers" element={<BestSellers />} />
+                <Route path="/voucher" element={<VoucherPage />} />
+                {/* Dynamic Route */}
                 <Route
-                  path="/my-order-detail/:order_id"
-                  element={<MyOrderDetailPage />}
+                  path="/voucher/:voucherSlug"
+                  element={<VoucherDetailPage />}
                 />
-              </Route>
+                <Route path="/category/:category" element={<CategoryPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route
+                  path="/payment-callback"
+                  element={<PaymentCallbackPage />}
+                />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/my-order" element={<MyOrderPage />} />
+                  <Route path="/edit-profile" element={<EditProfile />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/history-bv" element={<HistoryBvPage />} />
+                  <Route path="/downline" element={<DownlinePage />} />
+                  <Route path="/wishlist" element={<WishlistPage />} />
+                  <Route
+                    path="/my-order-detail/:order_id"
+                    element={<MyOrderDetailPage />}
+                  />
+                </Route>
 
-              {/* Dynamic Route */}
-              <Route
-                path="/product/:productSlug"
-                element={<ProductDetailPage />}
-              />
-              {/* Fungsi untuk not found jika tidak ada routes */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </CheckoutProvider>
-        </CartProvider>
+                {/* Dynamic Route */}
+                <Route
+                  path="/product/:productSlug"
+                  element={<ProductDetailPage />}
+                />
+                {/* Fungsi untuk not found jika tidak ada routes */}
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </CheckoutProvider>
+          </CartProvider>
+        </WishlistProvider>
       </AuthProvider>
     </>
   );

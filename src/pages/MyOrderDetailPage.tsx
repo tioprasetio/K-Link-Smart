@@ -24,6 +24,7 @@ type OrderDetail = {
   shipping_cost: number;
   shipping_method: string;
   shipment_status: string;
+  resi: string;
   payment_method: string;
   discount: number;
   products: OrderProduct[];
@@ -108,7 +109,10 @@ export default function MyOrderDetailPage() {
               <i className="bx bx-package"></i> Info Pengiriman
             </h3>
             <div className="flex justify-between">
-              <span>{data.shipping_method}</span>
+              <div className="flex flex-col">
+                <span>{data.shipping_method}</span>
+                <span className="text-sm">{data.resi}</span>
+              </div>
               <span>{formatRupiah(data.shipping_cost)}</span>
             </div>
           </div>
