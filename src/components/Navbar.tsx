@@ -1,8 +1,6 @@
-import "flowbite/dist/flowbite.min.js";
 import { Link } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
 import { useEffect } from "react";
-import "flowbite";
 import { useCart } from "../context/CartContext";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";

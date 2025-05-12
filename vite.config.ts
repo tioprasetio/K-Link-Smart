@@ -9,4 +9,7 @@ export default defineConfig({
   define: {
     "process.env": {},
   },
+  build: {
+    chunkSizeWarningLimit: 1000, // Setel ke 1000 kB (1 MB)
+  },
 });
