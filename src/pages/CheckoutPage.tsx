@@ -11,6 +11,9 @@ import { DestinationResult } from "../types/Destination";
 import { ShippingMethod } from "../types/ShippingMethod";
 import { ShippingOption } from "../types/ShippingOption";
 import PromoProduct from "../components/PromoProduct";
+import { Period } from "../types/BvPeriod";
+import { useCart } from "../context/CartContext";
+import ProductInformationCheckout from "../components/ProductInformationCheckout";
 
 const CheckoutPage = () => {
   // Context hooks
@@ -18,6 +21,12 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
   const { user, loading } = useAuth();
+
+  // Tambahkan state baru di bagian atas
+  const [periods, setPeriods] = useState<Period[]>([]);
+  // Ubah deklarasi state menjadi:
+  const [selectedBvPeriod, setSelectedBvPeriod] = useState<string>("");
+  const [isLoadingPeriods, setIsLoadingPeriods] = useState(false);
 
   // Receiver information
   const [receiverName, setReceiverName] = useState(user?.name || "");
@@ -55,6 +64,8 @@ const CheckoutPage = () => {
   // Voucher
   const [voucherCode, setVoucherCode] = useState("");
   const [discount, setDiscount] = useState(0);
+
+  const { clearCheckedOutItems } = useCart();
 
   // Calculate values
   const totalWeight = useMemo(() => {
@@ -138,13 +149,16 @@ const CheckoutPage = () => {
     let isMounted = true;
 
     const fetchShippingMethods = async () => {
-      if (!selectedDestination) {
+      if (!selectedDestination || totalWeight <= 0 || hargaProduct <= 0) {
         if (isMounted) {
           setShippingMethods([]);
           setSelectedMethod(null);
         }
         return;
       }
+
+      const weight = totalWeight > 0 ? totalWeight : 0.1; // minimum weight
+      const value = hargaProduct > 0 ? hargaProduct : 1000; // minimum value
 
       setIsLoadingMethods(true);
       setMethodsError(null);
@@ -155,8 +169,8 @@ const CheckoutPage = () => {
           {
             params: {
               receiver_destination_id: selectedDestination.id,
-              weight: totalWeight,
-              item_value: hargaProduct,
+              weight: weight,
+              item_value: value,
             },
           }
         );
@@ -197,13 +211,21 @@ const CheckoutPage = () => {
     let isMounted = true;
 
     const fetchShippingOptions = async () => {
-      if (!selectedMethod || !selectedDestination) {
+      if (
+        !selectedMethod ||
+        !selectedDestination ||
+        totalWeight <= 0 ||
+        hargaProduct <= 0
+      ) {
         if (isMounted) {
           setShippingOptions([]);
           setSelectedOption(null);
         }
         return;
       }
+
+      const weight = totalWeight > 0 ? totalWeight : 0.1; // minimum weight
+      const value = hargaProduct > 0 ? hargaProduct : 1000; // minimum value
 
       setIsLoadingShipping(true);
       try {
@@ -213,8 +235,8 @@ const CheckoutPage = () => {
             params: {
               shipper_destination_id: "17579",
               receiver_destination_id: selectedDestination.id,
-              weight: totalWeight,
-              item_value: hargaProduct,
+              weight: weight,
+              item_value: value,
               cod: "no",
             },
           }
@@ -249,6 +271,37 @@ const CheckoutPage = () => {
     };
   }, [selectedMethod, selectedDestination, totalWeight, hargaProduct]);
 
+  useEffect(() => {
+    const fetchBvPeriods = async () => {
+      setIsLoadingPeriods(true);
+      try {
+        console.log("Fetching BV periods..."); // <-- Tambahkan ini
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_URL}/api/active-bv-periods`
+        );
+
+        console.log("BV periods response:", response.data); // <-- Tambahkan ini
+
+        // Perbaikan disini:
+        if (
+          response.data.status === "success" &&
+          Array.isArray(response.data.data)
+        ) {
+          setPeriods(response.data.data);
+          if (response.data.data.length > 0) {
+            setSelectedBvPeriod(response.data.data[0].id.toString()); // Convert ke string
+          }
+        }
+      } catch (error) {
+        console.error("Error loading BV periods:", error); // <-- Pastikan ini tercetak jika ada error
+      } finally {
+        setIsLoadingPeriods(false);
+      }
+    };
+
+    fetchBvPeriods();
+  }, []);
+
   // Voucher application
   const handleApplyVoucher = async () => {
     if (!voucherCode) {
@@ -271,12 +324,16 @@ const CheckoutPage = () => {
       } else {
         Swal.fire(
           "Error",
-          "Voucher tidak valid atau sudah digunakan!",
+          response.data.message || "Voucher tidak valid!",
           "error"
         );
       }
-    } catch {
-      Swal.fire("Error", "Terjadi kesalahan saat memeriksa voucher!", "error");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message ||
+        "Terjadi kesalahan saat memeriksa voucher!";
+      Swal.fire("Error", message, "error");
     }
   };
 
@@ -327,6 +384,8 @@ const CheckoutPage = () => {
       return;
     }
 
+    const token = localStorage.getItem("token");
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_URL}/api/create-transaction`,
@@ -342,6 +401,12 @@ const CheckoutPage = () => {
           shipping_method: `${selectedMethod?.name} - ${selectedOption.service_name}`,
           payment_method: paymentMethod,
           products: selectedProducts,
+          bv_period_id: parseInt(selectedBvPeriod, 10),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -351,6 +416,11 @@ const CheckoutPage = () => {
           text: "Pesanan Anda telah tercatat. Silahkan tunggu barang dikirim.",
           icon: "success",
         }).then(() => {
+          clearCheckedOutItems(selectedProducts);
+
+          // Hapus checkout dari local storage dan state
+          localStorage.removeItem("selectedProducts");
+          setSelectedProducts([]);
           navigate("/my-order"); // Redirect ke halaman pesanan
         });
       } else {
@@ -492,35 +562,7 @@ const CheckoutPage = () => {
       </div>
 
       {/* Informasi Produk */}
-      {selectedProducts.length === 0 ? (
-        <p>Memuat data pengguna...</p>
-      ) : (
-        <div className="space-y-4">
-          {selectedProducts.map((product) => (
-            <div
-              key={product.id}
-              className={`${
-                isDarkMode
-                  ? "bg-[#404040] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
-              } p-4 rounded-lg flex items-center mt-4`}
-            >
-              <img
-                src={`${import.meta.env.VITE_API_URL}/storage/${
-                  product.picture
-                }`}
-                alt={product.name}
-                className="h-16 w-16 mr-4 object-cover rounded-md"
-              />
-              <div className="flex-1">
-                <p className="font-medium">{product.name}</p>
-                <p className="font-semibold">{formatRupiah(product.harga)}</p>
-                <p>Jumlah: {product.quantity}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <ProductInformationCheckout />
 
       {/* Voucher */}
       <div
@@ -539,19 +581,59 @@ const CheckoutPage = () => {
             onChange={(e) => setVoucherCode(e.target.value)}
             className={`${
               isDarkMode
-                ? "bg-[#252525] text-[#FFFFFF]"
-                : "bg-[#FFFFFF] text-[#353535]"
+                ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300"
+                : "bg-[#FFFFFF] text-[#353535] placeholder-gray-400"
             } border p-2 rounded w-full`}
           />
           <button
             onClick={handleApplyVoucher}
-            className="bg-green-500 text-white p-2 rounded"
+            className="bg-green-500 text-white p-2 rounded cursor-pointer"
           >
             Gunakan
           </button>
         </div>
       </div>
       <PromoProduct />
+
+      {/* Letakkan setelah bagian Voucher */}
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg shadow mb-6 mt-4 left-0 flex-col md:flex-row md:justify-between`}
+      >
+        <h3 className="font-bold mb-4">Periode BV</h3>
+        <div className="w-full md:w-auto">
+          {isLoadingPeriods ? (
+            <p>Memuat periode BV...</p>
+          ) : (
+            <select
+              value={selectedBvPeriod || ""}
+              onChange={(e) => setSelectedBvPeriod(e.target.value)}
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF]"
+                  : "bg-[#FFFFFF] text-[#353535]"
+              } border p-2 rounded w-full cursor-pointer`}
+            >
+              <option value="">Pilih Periode BV</option>
+              {periods.map((period: Period) => (
+                <option key={period.id} value={period.id}>
+                  {period.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <p
+            className={`${
+              isDarkMode ? "text-gray-300" : "text-gray-500"
+            } text-sm mt-1`}
+          >
+            Pilih periode untuk memasukkan BV dari pembelian ini
+          </p>
+        </div>
+      </div>
 
       {/* Metode Pengiriman */}
       <div
@@ -573,13 +655,13 @@ const CheckoutPage = () => {
               placeholder="e.g. 'Bekasi, Jawa Barat'"
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
+                  ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300"
+                  : "bg-[#FFFFFF] text-[#353535] placeholder-gray-400"
               } flex-1 p-2 border rounded`}
             />
             <button
               onClick={searchDestination}
-              className="bg-[#28A154] text-white px-4 py-2 rounded"
+              className="bg-[#28A154] text-white px-4 py-2 rounded cursor-pointer"
               disabled={isSearching}
             >
               {isSearching ? "Loading..." : "Cari"}
@@ -668,7 +750,7 @@ const CheckoutPage = () => {
                 isDarkMode
                   ? "bg-[#252525] text-[#FFFFFF]"
                   : "bg-[#FFFFFF] text-[#353535]"
-              } w-full p-2 border rounded`}
+              } w-full p-2 border rounded cursor-pointer`}
               disabled={!selectedDestination}
             >
               <option value="">Pilih Ekspedisi</option>
@@ -724,7 +806,7 @@ const CheckoutPage = () => {
           <h2 className="text-lg font-bold mb-3">Metode Pembayaran</h2>
           <div className="flex flex-col sm:flex-row gap-3">
             <div
-              className={`flex-1 p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
+              className={`flex-1 p-4 hover:scale-101 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
                 paymentMethod === "online"
                   ? isDarkMode
                     ? "border-2 border-green-500 bg-[#1e3a26]"
@@ -753,7 +835,7 @@ const CheckoutPage = () => {
             </div>
 
             <div
-              className={`flex-1 p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
+              className={`flex-1 p-4 hover:scale-101 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
                 paymentMethod === "cod"
                   ? isDarkMode
                     ? "border-2 border-green-500 bg-[#1e3a26]"
@@ -835,7 +917,7 @@ const CheckoutPage = () => {
               isDarkMode
                 ? "bg-[#cb2525] text-[#f0f0f0]"
                 : "bg-[#cb2525] text-[#f0f0f0]"
-            } px-4 py-2 font-semibold rounded w-1/2`}
+            } px-4 py-2 hover:bg-[#a12828] font-semibold rounded w-1/2`}
           >
             Batal
           </Btn>

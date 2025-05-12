@@ -10,32 +10,36 @@ const AllProduct = () => {
   const { isDarkMode } = useDarkMode();
   const [filteredProducts, setFilteredProducts] = useState(products);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword"); //Ambil keyword dari URL
+  const sort = searchParams.get("sort"); // termurah / termahal
+  const minRating = parseFloat(searchParams.get("rating") ?? "0");
 
   useEffect(() => {
-    if (keyword) {
-      setFilteredProducts(
-        products.filter((product) =>
-          product.name?.toLowerCase().includes(keyword.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredProducts(products);
-    }
-  }, [keyword, products]);
+    let filtered = [...products];
 
-  //Tambahkan efek untuk filter produk berdasarkan keyword
-  useEffect(() => {
+    // Filter berdasarkan keyword
     if (keyword) {
-      const filtered = products.filter((product) =>
+      filtered = filtered.filter((product) =>
         product.name?.toLowerCase().includes(keyword.toLowerCase())
       );
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts(products);
     }
-  }, [keyword, products]);
+
+    // Filter berdasarkan rating minimal
+    filtered = filtered.filter((product) => {
+      const rating = product.average_rating || 0;
+      return rating >= minRating;
+    });
+
+    // Sortir harga
+    if (sort === "termurah") {
+      filtered.sort((a, b) => a.harga - b.harga);
+    } else if (sort === "termahal") {
+      filtered.sort((a, b) => b.harga - a.harga);
+    }
+
+    setFilteredProducts(filtered);
+  }, [keyword, sort, minRating, products]);
 
   if (loading)
     return (
@@ -67,26 +71,62 @@ const AllProduct = () => {
           </span>
         </div>
 
+        <div className="flex gap-4 px-6">
+          <select
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "") {
+                searchParams.delete("sort"); // Hapus param jika kosong
+              } else {
+                searchParams.set("sort", value);
+              }
+              setSearchParams(searchParams);
+            }}
+            value={sort || ""}
+            className="border p-2 rounded"
+          >
+            <option value="">Urutkan Harga</option>
+            <option value="termurah">Termurah ke Termahal</option>
+            <option value="termahal">Termahal ke Termurah</option>
+          </select>
+
+          <select
+            onChange={(e) => {
+              searchParams.set("rating", e.target.value);
+              setSearchParams(searchParams);
+            }}
+            defaultValue={minRating || ""}
+            className="border p-2 rounded"
+          >
+            <option value="0">Semua Rating</option>
+            <option value="1">⭐1</option>
+            <option value="2">⭐2</option>
+            <option value="3">⭐3</option>
+            <option value="4">⭐4</option>
+            <option value="5">⭐5</option>
+          </select>
+        </div>
+
         <div className="p-6 w-full">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {loading ? (
-              <div className="flex justify-center items-center h-40">
-                <p className="text-gray-500">Loading...</p>
-              </div>
-            ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+              <p className="text-gray-500">Loading...</p>
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredProducts.map((product) => (
                 <CardProduct
                   key={product.id}
                   {...product}
                   isDarkMode={isDarkMode}
                 />
-              ))
-            ) : (
-              <p className="text-center text-gray-500">
-                Produk tidak ditemukan.
-              </p>
-            )}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
+              <p className="text-left text-gray-500">Produk tidak ditemukan.</p>
+            </div>
+          )}
         </div>
       </div>
     </>

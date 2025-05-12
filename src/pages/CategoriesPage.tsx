@@ -75,21 +75,27 @@ const CategoryPage = () => {
         </div>
 
         <div className="p-6 w-full">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product, index) => (
-                <CardProduct key={index} {...product} isDarkMode={isDarkMode} />
-              ))
-            ) : (
+          {filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredProducts.map((product) => (
+                <CardProduct
+                  key={product.id}
+                  {...product}
+                  isDarkMode={isDarkMode}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
               <p
                 className={`${
-                  isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-                } text-center`}
+                  isDarkMode ? "text-[#353535]" : "text-[#353535]"
+                } text-left`}
               >
                 Maaf, tidak ada produk tersedia untuk kategori ini.
               </p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </>

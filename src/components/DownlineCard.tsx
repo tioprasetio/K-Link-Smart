@@ -33,12 +33,18 @@ const DownlineCard: React.FC<Props> = ({ downline }) => {
         alt={downline.name}
         className="w-16 h-16 rounded-full object-cover"
       />
-      <div>
-        <h3 className="text-lg font-semibold">{downline.name}</h3>
-        <p className="text-sm text-gray-400">{downline.uid}</p>
-        <p className="text-sm text-gray-400 mb-2">{downline.email}</p>
+      <div className="max-w-[200px]">
+        <h3 className="text-lg font-semibold break-words overflow-hidden">
+          {downline.name}
+        </h3>
+        <p className="text-sm text-gray-400 break-words overflow-hidden">
+          {downline.uid}
+        </p>
+        <p className="text-sm text-gray-400 mb-2 break-words overflow-hidden">
+          {downline.email}
+        </p>
         {downline.leader_id && (
-          <p className="text-sm italic">
+          <p className="text-sm italic break-words overflow-hidden">
             Recruiter: <span className="font-medium">{downline.leader_id}</span>
           </p>
         )}

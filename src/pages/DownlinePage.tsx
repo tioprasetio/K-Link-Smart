@@ -61,11 +61,19 @@ const DownlinePage: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : downlines.length === 0 ? (
-          <p className="text-gray-500">Belum ada downline.</p>
+          <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
+            <p
+              className={`${
+                isDarkMode ? "text-[#353535]" : "text-[#353535]"
+              } text-left`}
+            >
+              Belum ada downline.
+            </p>
+          </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {downlines.map((d) => (
-              <DownlineCard key={d.id} downline={d} />
+            {downlines.map((downline) => (
+              <DownlineCard key={downline.uid} downline={downline} />
             ))}
           </div>
         )}

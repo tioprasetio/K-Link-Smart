@@ -15,7 +15,10 @@ interface WishlistItem {
   name?: string;
   harga?: number;
   picture?: string;
+  bv?: number;
   beratPengiriman?: number;
+  terjual?: number;
+  average_rating?: string;
 }
 
 interface WishlistContextType {

@@ -20,7 +20,7 @@ const Category = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="mb-16">
+    <div className="mb-8">
       <Swiper
         modules={[Pagination]}
         slidesPerView={1}
@@ -35,27 +35,33 @@ const Category = () => {
         className="mySwiper"
       >
         {categories.map((categories, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={index} className="py-2">
             <Link to={`/category/${encodeURIComponent(categories.name)}`}>
               <div
                 className={`${
                   isDarkMode ? "bg-[#303030]" : "bg-white"
-                } p-4 rounded-lg text-center flex flex-col items-center min-h-[200px] justify-center`}
+                } hover:scale-105 hover:shadow-md transition-all cursor-pointer p-3 rounded-xl gap-2 flex flex-row items-center min-h-[85px] min-w-[75px]`}
               >
-                <img
-                  src={`${import.meta.env.VITE_API_URL}/storage/${
-                    categories.picture
+                <div
+                  className={`flex items-center justify-center w-12 h-12 rounded-lg mb-2 ${
+                    isDarkMode ? "bg-[#303030]" : "bg-white"
                   }`}
-                  className="w-24 h-24 object-cover"
-                  loading="lazy"
-                  width={512}
-                  height={512}
-                  alt={categories.name}
-                />
+                >
+                  <img
+                    src={`${import.meta.env.VITE_API_URL}/storage/${
+                      categories.picture
+                    }`}
+                    className="w-9 h-9 object-cover"
+                    loading="lazy"
+                    width={512}
+                    height={512}
+                    alt={categories.name}
+                  />
+                </div>
                 <h3
                   className={`${
-                    isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-                  } text-lg font-semibold mt-2`}
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  } text-xs font-semibold`}
                 >
                   {categories.name}
                 </h3>

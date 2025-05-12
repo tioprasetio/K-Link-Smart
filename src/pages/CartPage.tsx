@@ -83,7 +83,7 @@ const CartPage = () => {
     }
 
     // Jika valid, tambahkan quantity
-    await addToCart(productId, 1);
+    await addToCart(productId, 1, product.variant);
     await fetchCart();
   };
 
@@ -145,9 +145,8 @@ const CartPage = () => {
             className="bx bx-arrow-back text-xl md:text-2xl cursor-pointer"
             onClick={() => navigate(-1)} // Tambahkan fungsi kembali
           ></i>
-          <h1 className="text-2xl font-bold">
-            Keranjang Saya {totalItems > 0 ? `(${totalItems})` : ""}
-          </h1>
+          <h1 className="text-2xl font-bold">Keranjang Saya</h1>
+          {totalItems > 0 ? `(${totalItems})` : ""}
         </div>
 
         {cart.length === 0 ? (
@@ -210,6 +209,16 @@ const CartPage = () => {
                     <a className="inline-block font-semibold" href="#">
                       BV: {item.bv * item.quantity}
                     </a>
+                    {item.variant && (
+                      <p
+                        className={`${
+                          isDarkMode ? "text-gray-300" : "text-gray-600"
+                        } text-sm`}
+                      >
+                        Varian: {item.variant}
+                      </p>
+                    )}
+
                     <a className="inline-block font-semibold" href="#">
                       {formatRupiah(item.harga * item.quantity)}
                     </a>

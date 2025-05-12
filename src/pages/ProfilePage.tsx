@@ -4,17 +4,21 @@ import { useDarkMode } from "../context/DarkMode";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useWishlist } from "../context/WishlistContext";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const { isDarkMode } = useDarkMode();
+  const { wishlistItems } = useWishlist();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
+    profile_picture: "",
     BV: 0,
     email: "",
   });
   const navigate = useNavigate();
+  const totalItems = wishlistItems.length;
   const [orders, setOrders] = useState<
     {
       shipment_status: string;
@@ -35,6 +39,8 @@ const ProfilePage = () => {
     if (user) {
       setFormData({
         name: user.name || "",
+        profile_picture:
+          typeof user.profile_picture === "string" ? user.profile_picture : "",
         BV: user.BV || 0,
         email: user.email || "",
       });
@@ -85,7 +91,7 @@ const ProfilePage = () => {
           isDarkMode
             ? "bg-[#140c00] text-[#f0f0f0]"
             : "bg-[#f4f6f9] text-[#353535]"
-        } p-4 pt-24 sm:pt-28 w-full min-h-screen`}
+        } p-6 pt-24 sm:pt-28 w-full min-h-screen max-w-4xl mx-auto`}
       >
         <div className="flex items-center gap-2 mb-4">
           <i
@@ -110,24 +116,31 @@ const ProfilePage = () => {
               : "bg-[#FFFFFF] text-[#353535]"
           } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
         >
-          <div className="flex flex-col gap-2 font-bold">
-            <div className="flex flex-row items-center gap-1">
-              <i className="bx bx-user"></i>
-              <h1 className="truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
-                {formData.name}
-              </h1>
-            </div>
-
-            <div className="flex flex-row items-center gap-1">
-              <i className="bx bx-coin-stack"></i>
-              <h1>{formData.BV}</h1>
-            </div>
-
-            <div className="flex flex-row items-center gap-1">
-              <i className="bx bx-envelope"></i>
-              <h1 className="truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
-                {formData.email}
-              </h1>
+          <div className="flex flex-col gap-3 font-bold">
+            <div className="flex flex-row items-center gap-3">
+              {/* <i className="bx bx-user"></i> */}
+              <img
+                src={`${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+                  formData.profile_picture
+                }`}
+                alt="Current Profile"
+                className="w-13 h-13 rounded-full"
+              />
+              <div className="flex flex-col">
+                <h1 className="truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
+                  {formData.name}
+                </h1>
+                <div className="flex flex-row items-center gap-1">
+                  <i className="bx bx-coin-stack"></i>
+                  <h1>{formData.BV}</h1>
+                </div>
+                <div className="flex flex-row items-center gap-1">
+                  <i className="bx bx-envelope"></i>
+                  <h1 className="truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
+                    {formData.email}
+                  </h1>
+                </div>
+              </div>
             </div>
           </div>
           <Link to="/edit-profile">
@@ -160,8 +173,40 @@ const ProfilePage = () => {
               : "bg-[#FFFFFF] text-[#353535]"
           } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
         >
+          <div className="flex">
+            <span>Favorite</span>
+            <span className="text-[#959595]">
+              {totalItems > 0 ? `(${totalItems})` : ""}
+            </span>
+          </div>
+
+          <Link to="/wishlist">
+            <i className="bx bx-right-arrow-alt text-2xl"></i>
+          </Link>
+        </div>
+
+        <div
+          className={`${
+            isDarkMode
+              ? "bg-[#404040] text-[#f0f0f0]"
+              : "bg-[#FFFFFF] text-[#353535]"
+          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
+        >
           History Transaksi BV
           <Link to="/history-bv">
+            <i className="bx bx-right-arrow-alt text-2xl"></i>
+          </Link>
+        </div>
+
+        <div
+          className={`${
+            isDarkMode
+              ? "bg-[#404040] text-[#f0f0f0]"
+              : "bg-[#FFFFFF] text-[#353535]"
+          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
+        >
+          BV Report
+          <Link to="/bv-report">
             <i className="bx bx-right-arrow-alt text-2xl"></i>
           </Link>
         </div>

@@ -3,7 +3,7 @@ export interface Product {
   name: string;
   harga: number;
   stock: number;
-  rate: string;
+  average_rating?: number;
   terjual: number;
   pemesananMin: number;
   picture: string;

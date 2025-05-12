@@ -80,8 +80,8 @@ const Chatbot: React.FC<ChatbotProps> = ({
           placeholder={`Tanyakan tentang ${productName}...`}
           className={`${
             isDarkMode
-              ? "bg-[#282828] text-[#f0f0f0] border-gray-700"
-              : "bg-[#ffffff] text-gray-900 border-gray-300"
+              ? "bg-[#282828] text-[#f0f0f0] border-gray-700 placeholder-gray-300"
+              : "bg-[#ffffff] text-gray-900 border-gray-300 placeholder-gray-400"
           } w-full p-2 border  rounded-md outline-none`}
         />
         <button

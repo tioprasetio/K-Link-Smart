@@ -18,11 +18,16 @@ interface CartItem {
   quantity: number;
   beratPengiriman: number;
   bv: number;
+  variant?: string;
 }
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (productId: number, quantity: number) => void;
+  addToCart: (
+    productId: number,
+    quantity: number,
+    variant?: string
+  ) => void;
   decreaseQuantity: (productId: number, quantity: number) => void;
   removeFromCart: (cartId: number) => void;
   fetchCart: () => void;
@@ -68,7 +73,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const addToCart = async (productId: number, quantity: number) => {
+  const addToCart = async (
+    productId: number,
+    quantity: number,
+    variant?: string
+  ) => {
     if (!userEmail) {
       console.error("User email not found in token");
       return;
@@ -85,10 +94,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
+
       await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/cart`, {
         user_email: userEmail,
         product_id: productId,
         quantity,
+        variant: variant, // Send just the name/value instead of the whole object
       });
       fetchCart(); // Refresh data keranjang
     } catch (error) {

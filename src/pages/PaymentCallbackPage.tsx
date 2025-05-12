@@ -28,7 +28,11 @@ const PaymentCallbackPage = () => {
     const transactionStatus = searchParams.get("transaction_status");
 
     if (orderId && transactionStatus) {
-      if (transactionStatus === "settlement" && statusCode === "200") {
+      if (
+        (transactionStatus === "settlement" ||
+          transactionStatus === "capture") &&
+        statusCode === "200"
+      ) {
         // Jika status sukses, ambil detail transaksi dari backend
         fetchTransactionDetails(orderId);
         setStatus("success");

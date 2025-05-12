@@ -12,6 +12,7 @@ interface OrderProduct {
   price: number; // Sesuai dengan yang dikembalikan API
   quantity: number;
   picture: string;
+  variant: string;
 }
 
 type OrderDetail = {
@@ -190,6 +191,9 @@ export default function MyOrderDetailPage() {
                       <div className="flex flex-col gap-1">
                         <p className="font-semibold truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
                           {product.name}
+                        </p>
+                        <p className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
+                          Variant: {product.variant}
                         </p>
                         <p className="text-sm">{formatRupiah(product.price)}</p>
                       </div>

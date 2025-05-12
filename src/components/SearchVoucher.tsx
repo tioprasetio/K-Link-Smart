@@ -70,8 +70,8 @@ const SearchVoucher = () => {
             type="search"
             className={`${
               isDarkMode
-                ? "bg-[#303030] text-white border-gray-700"
-                : "bg-white text-[#353535] border-gray-300"
+                ? "bg-[#303030] text-white border-gray-700 placeholder-gray-300"
+                : "bg-white text-[#353535] border-gray-300 placeholder-gray-400"
             } block w-full p-4 ps-10 text-sm border rounded-lg focus:ring-[#28a154] focus:border-[#28a154]`}
             placeholder="Cari voucher"
             value={query}

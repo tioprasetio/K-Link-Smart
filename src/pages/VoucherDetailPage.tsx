@@ -5,6 +5,7 @@ import Btn from "../components/Btn";
 import { useState } from "react";
 import PromoProduct from "../components/PromoProduct";
 import useVouchers from "../context/VoucherContext";
+import { formatDate } from "../utils/formatDate";
 
 const VoucherDetailPage = () => {
   const { isDarkMode } = useDarkMode();
@@ -102,6 +103,17 @@ const VoucherDetailPage = () => {
 
           <div className="flex flex-col">
             <h1 className="font-bold text-base">
+              <i className="bx bx-calendar"></i> Masa Aktif
+            </h1>
+            <p
+              className={`${
+                isDarkMode ? "text-[#f0f0f0]" : "text-[#959595]"
+              } text-base font-medium`}
+            >
+              Hingga {formatDate(voucher.exp)}
+            </p>
+
+            <h1 className="font-bold text-base mt-4">
               <i className="bx bx-calendar"></i> Kode Voucher
             </h1>
             <p

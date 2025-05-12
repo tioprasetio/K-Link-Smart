@@ -115,7 +115,15 @@ const HistoryBvPage = () => {
         </div>
 
         {bvItems.length === 0 ? (
-          <p className="text-center">Tidak ada riwayat BV dari downline.</p>
+          <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
+            <p
+              className={`${
+                isDarkMode ? "text-[#353535]" : "text-[#353535]"
+              } text-left`}
+            >
+              Tidak ada riwayat BV dari downline.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             {bvItems.map((item) => (

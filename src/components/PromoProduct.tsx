@@ -11,7 +11,7 @@ const PromoProduct = () => {
   const { vouchers, loading, error } = useVouchers();
   const navigate = useNavigate();
 
-  // Membuat slug dari nama produk
+  // Membuat slug dari nama voucher
   const generateSlug = (name: string) =>
     name.toLowerCase().replace(/\s+/g, "-");
 

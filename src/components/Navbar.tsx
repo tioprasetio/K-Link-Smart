@@ -73,7 +73,7 @@ const NavbarComponent = () => {
           <span
             className={`${
               isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-            } self-center text-2xl font-semibold whitespace-nowrap`}
+            } self-center text-2xl font-bold whitespace-nowrap`}
           >
             K-Smart
           </span>
@@ -156,7 +156,7 @@ const NavbarComponent = () => {
                   isDarkMode
                     ? "text-[#f0f0f0] bg-[#140c00]"
                     : "text-[#353535] bg-white"
-                } block py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm`}
+                } block py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm text-sm`}
                 aria-current="page"
               >
                 Home
@@ -170,7 +170,7 @@ const NavbarComponent = () => {
                   isDarkMode
                     ? "text-[#f0f0f0] bg-[#140c00]"
                     : "text-[#353535] bg-white"
-                } block py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm`}
+                } block py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm text-sm`}
                 aria-current="page"
               >
                 Tentang Kami
@@ -184,7 +184,7 @@ const NavbarComponent = () => {
                   isDarkMode
                     ? "text-[#f0f0f0] bg-[#140c00]"
                     : "text-[#353535] bg-white"
-                } block py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm`}
+                } block py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm text-sm`}
                 aria-current="page"
               >
                 Voucher
@@ -228,7 +228,7 @@ const NavbarComponent = () => {
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className={`${
                   isDarkMode
-                    ? "text-[#f0f0f0] bg-[#303030]"
+                    ? "text-[#f0f0f0] bg-[#505050]"
                     : "text-[#353535] bg-[#f0f0f0]"
                 } cursor-pointer block py-2 px-3 text-center hover:text-white w-full md:w-auto hover:bg-[#28a154] rounded-sm`}
               >
@@ -260,7 +260,7 @@ const NavbarComponent = () => {
                     className={`${
                       isDarkMode
                         ? "text-[#f0f0f0] bg-[#28a154]"
-                        : "text-[#353535] bg-[#f0f0f0]"
+                        : "text-[#f0f0f0] bg-[#28a154]"
                     } cursor-pointer block py-2 px-3 text-center hover:text-white w-full md:w-auto hover:bg-[#167e3c] rounded-sm`}
                   >
                     Login

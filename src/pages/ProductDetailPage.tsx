@@ -14,6 +14,10 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useCheckout } from "../context/CheckoutContext";
 import { useWishlist } from "../context/WishlistContext";
+import ProductReviews from "../components/ProductReviews";
+import { ProductVariant } from "../types/ProductVariant";
+import useProductVariants from "../context/ProductVariantContext";
+import useProductAugmented from "../context/ProductAugmentedContext";
 
 const ProductDetailPage = () => {
   const { addToCart, cart } = useCart();
@@ -31,6 +35,15 @@ const ProductDetailPage = () => {
 
   // Ekstrak ID dari productSlug
   const productId = productSlug ? parseInt(productSlug.split("-")[0]) : null;
+  const { variants } = useProductVariants(productId);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    null
+  );
+
+  const { augmenteds } = useProductAugmented(productId);
+
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Cari produk berdasarkan ID
   useEffect(() => {
@@ -85,7 +98,7 @@ const ProductDetailPage = () => {
           timer: 1500,
         });
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error toggling wishlist:", error);
       Swal.fire({
@@ -132,6 +145,15 @@ const ProductDetailPage = () => {
       return;
     }
 
+    if (!selectedVariant && variants.length > 0) {
+      Swal.fire({
+        title: "Pilih Varian",
+        text: "Silakan pilih varian produk terlebih dahulu.",
+        icon: "warning",
+      });
+      return;
+    }
+
     if (product) {
       if (quantity > product.stock) {
         Swal.fire({
@@ -161,7 +183,11 @@ const ProductDetailPage = () => {
       }
 
       try {
-        await addToCart(product.id, quantity);
+        await addToCart(
+          product.id,
+          quantity,
+          selectedVariant ? selectedVariant.variant_name : undefined
+        );
 
         Swal.fire({
           title: "Berhasil!",
@@ -195,6 +221,15 @@ const ProductDetailPage = () => {
       return;
     }
 
+    if (!selectedVariant && variants.length > 0) {
+      Swal.fire({
+        title: "Pilih Varian",
+        text: "Silakan pilih varian produk terlebih dahulu.",
+        icon: "warning",
+      });
+      return;
+    }
+
     if (product) {
       if (quantity > product.stock) {
         Swal.fire({
@@ -215,6 +250,7 @@ const ProductDetailPage = () => {
         quantity: quantity,
         bv: product.bv,
         beratPengiriman: product.beratPengiriman,
+        variant: selectedVariant ? selectedVariant.variant_name : undefined,
       };
 
       setSelectedProducts([productToCheckout]);
@@ -272,34 +308,112 @@ const ProductDetailPage = () => {
             <div className="flex flex-col">
               <section className="bg-[#ffffff] rounded-lg p-4 mb-3 xl:mb-4 relative">
                 {/* Tombol wishlist di sudut kanan atas gambar */}
-                <button
-                  onClick={handleToggleWishlist}
-                  disabled={wishlistLoading}
-                  className="absolute top-4 right-4 z-10 bg-white/70 hover:bg-white/90 p-2 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center"
-                  aria-label={
-                    isInWishlist(product.id)
-                      ? "Hapus dari wishlist"
-                      : "Tambahkan ke wishlist"
-                  }
-                >
-                  {wishlistLoading ? (
-                    <i className="bx bx-loader-alt animate-spin text-2xl text-gray-500"></i>
-                  ) : isInWishlist(product.id) ? (
-                    <i className="bx bxs-heart text-2xl text-red-500"></i>
-                  ) : (
-                    <i className="bx bx-heart text-2xl text-gray-500 hover:text-red-500"></i>
-                  )}
-                </button>
+                <div className="absolute top-4 right-4 z-10 flex items-center gap-4">
+                  <button
+                    onClick={handleToggleWishlist}
+                    disabled={wishlistLoading}
+                    className="bg-white/70 hover:bg-white/90 p-2 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center"
+                    aria-label={
+                      isInWishlist(product.id)
+                        ? "Hapus dari wishlist"
+                        : "Tambahkan ke wishlist"
+                    }
+                  >
+                    {wishlistLoading ? (
+                      <i className="bx bx-loader-alt animate-spin text-3xl text-gray-500"></i>
+                    ) : isInWishlist(product.id) ? (
+                      <i className="bx bxs-heart text-3xl text-red-500"></i>
+                    ) : (
+                      <i className="bx bx-heart text-3xl text-gray-500 hover:text-red-500"></i>
+                    )}
+                  </button>
 
-                <img
-                  src={`${import.meta.env.VITE_API_URL}/storage/${
-                    product.picture
-                  }`}
-                  alt={product.name}
-                  className="w-full object-cover"
-                  width={800}
-                  height={800}
-                />
+                  <button
+                    onClick={() => {
+                      const productUrl = window.location.href;
+
+                      if (navigator.share) {
+                        navigator
+                          .share({
+                            title: product?.name ?? "Produk",
+                            text: "Lihat produk ini di toko kami!",
+                            url: productUrl,
+                          })
+                          .catch((error) =>
+                            console.error("Gagal membagikan:", error)
+                          );
+                      } else {
+                        navigator.clipboard.writeText(productUrl).then(() => {
+                          Swal.fire({
+                            icon: "success",
+                            title: "Link disalin!",
+                            text: "Link produk telah disalin ke clipboard.",
+                            timer: 2000,
+                            showConfirmButton: false,
+                          });
+                        });
+                      }
+                    }}
+                    className="bg-white/70 hover:bg-white/90 p-2 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center"
+                    aria-label="Bagikan produk"
+                  >
+                    <i className="bx bx-share-alt text-3xl text-gray-600 hover:text-blue-600"></i>
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <img
+                    src={`${import.meta.env.VITE_API_URL}/storage/${
+                      product.picture
+                    }`}
+                    alt={product.name}
+                    className="w-full object-cover"
+                    width={800}
+                    height={800}
+                  />
+                  {augmenteds.map((augmented) => (
+                    <div
+                      key={augmented.id}
+                      className="hover:scale-105 transition-all absolute bottom-2 right-2 flex flex-col items-center z-20 cursor-pointer"
+                      onClick={() => {
+                        setSelectedImage(
+                          `${import.meta.env.VITE_API_URL}/storage/${
+                            augmented.picture
+                          }`
+                        );
+                        setShowImageModal(true);
+                      }}
+                    >
+                      <img
+                        src={`${import.meta.env.VITE_API_URL}/storage/${
+                          augmented.picture
+                        }`}
+                        alt="Augmented"
+                        className="w-20 h-20 object-contain bg-white rounded-t-md shadow-md"
+                      />
+                      <div className="bg-[#28A154] text-white text-xs font-medium py-1 px-2 rounded-b-md shadow-md w-full text-center hover:bg-[#167e3c] transition-colors">
+                        Click Here
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {showImageModal && selectedImage && (
+                  <div
+                    className="fixed inset-0 backdrop-blur-xs bg-[#000000b5] flex items-center justify-center z-99 p-4 w-full"
+                    onClick={() => setShowImageModal(false)}
+                  >
+                    <img
+                      src={selectedImage}
+                      alt="Augmented Zoom"
+                      className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                      onClick={(e) => e.stopPropagation()} // biar klik gambar tidak menutup
+                    />
+                  </div>
+                )}
+
+                <div className="flex items-center justify-center cursor-pointer absolute top-0 left-0 bg-[#28A154] text-[#FFFFFF] rounded-tl-lg rounded-br-lg md:text-base text-sm font-bold p-2 transition">
+                  BV {product.bv}
+                </div>
               </section>
 
               {/* Informasi Produk */}
@@ -350,10 +464,14 @@ const ProductDetailPage = () => {
                     </button>
                   </div>
                 </section>
+
+                <div className="p-2">
+                  <ProductReviews productId={product.id} />
+                </div>
                 <div
                   className={`${
                     isDarkMode ? "bg-[#303030]" : "bg-[#ffffff]"
-                  } fixed gap-4 bottom-0 left-0 w-full p-4 shadow-2xl flex justify-between items-center z-50`}
+                  } fixed gap-6 bottom-0 left-0 w-full p-4 shadow-2xl flex justify-between items-center z-50`}
                 >
                   <Btn
                     className="flex-1"
@@ -388,7 +506,7 @@ const ProductDetailPage = () => {
                   <div className="flex flex-row items-center">
                     <span className="text-[#959595] text-lg">
                       <i className="bx bxs-star text-lg text-[#FFD52DFF]"></i>
-                      {product.rate}
+                      {product.average_rating}
                     </span>
                     <span className="text-[#959595] text-lg px-1">|</span>
                     <span className="text-[#959595] text-lg">
@@ -457,6 +575,33 @@ const ProductDetailPage = () => {
                     </div>
                   </div>
 
+                  {variants.length > 0 && (
+                    <div className="flex flex-col pt-4">
+                      <h3
+                        className={`${
+                          isDarkMode ? "text-[#F0F0F0]" : "text-[#353535]"
+                        } text-base font-semibold `}
+                      >
+                        Pilih Variant
+                      </h3>
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {variants.map((variant) => (
+                          <button
+                            key={variant.id}
+                            onClick={() => setSelectedVariant(variant)}
+                            className={`px-4 py-1 rounded-full items-center cursor-pointer font-semibold ${
+                              selectedVariant?.id === variant.id
+                                ? "bg-[#28A154] text-white shadow-lg"
+                                : "bg-[#F4F6F9] text-[#454545]"
+                            } hover:bg-[#167e3c] hover:text-white`}
+                          >
+                            {variant.variant_name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <hr className="mt-4 border-t border-gray-300" />
                   <h3
                     className={`${
@@ -470,7 +615,7 @@ const ProductDetailPage = () => {
                       isDarkMode
                         ? "bg-[#404040] text-[#f0f0f0]"
                         : "bg-[#f4f6f9] text-[#353535]"
-                    } p-3 rounded-lg flex rounded-t-lg mt-4 rounded-b-lg`}
+                    } p-3 rounded-lg flex mt-4`}
                   >
                     <img
                       src={`${import.meta.env.VITE_API_URL}/storage/${
@@ -498,20 +643,24 @@ const ProductDetailPage = () => {
                       </div>
                     </div>
                   </div>
+                  {/* <iframe className="mt-4 w-full"
+                    src="https://mywebar.com/p/Project_0_kae8ad6ut"
+                    allow="camera;gyroscope;accelerometer;magnetometer;xr-spatial-tracking;microphone;"
+                  ></iframe> */}
                 </section>
 
                 <section className="mt-4 mb-0 xl:mb-4 relative">
                   <div
                     className={`${
                       isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-                    } p-6 md:px-0 font-bold text-lg leading-9`}
+                    } p-4 md:px-0 font-bold text-lg leading-9`}
                   >
                     Promo Tersedia untuk Produk ini
                   </div>
 
                   <PromoProduct />
 
-                  <div className="p-6">
+                  <div className="p-6 mt-4">
                     <Chatbot
                       productName={product.name}
                       productDescription={product.deskripsi}
@@ -519,6 +668,10 @@ const ProductDetailPage = () => {
                     />
                   </div>
                 </section>
+
+                <div className="p-2 md:hidden">
+                  <ProductReviews productId={product.id} />
+                </div>
 
                 {/* Tombol untuk mobile */}
                 <div className="mt-4 md:hidden">
@@ -571,7 +724,7 @@ const ProductDetailPage = () => {
                   <div
                     className={`${
                       isDarkMode ? "bg-[#303030]" : "bg-[#ffffff]"
-                    } fixed gap-4 bottom-0 left-0 w-full p-4 shadow-2xl flex justify-between items-center z-50`}
+                    } fixed gap-6 bottom-0 left-0 w-full p-4 shadow-2xl flex justify-between items-center z-50`}
                   >
                     <Btn
                       className="flex-1"

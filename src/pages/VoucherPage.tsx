@@ -71,9 +71,15 @@ const VoucherPage = () => {
 
         {/* Jika tidak ada voucher */}
         {filteredVouchers.length === 0 ? (
-          <p className="text-center text-gray-500 mt-4">
-            Tidak ada voucher yang tersedia.
-          </p>
+          <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
+            <p
+              className={`${
+                isDarkMode ? "text-[#353535]" : "text-[#353535]"
+              } text-left`}
+            >
+              Tidak ada voucher yang tersedia.
+            </p>
+          </div>
         ) : (
           <div className="flex flex-col lg:flex-row flex-wrap gap-4">
             {filteredVouchers.map((voucher, index) => (

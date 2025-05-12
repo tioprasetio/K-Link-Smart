@@ -1,7 +1,7 @@
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import NavbarComponent from "../components/Navbar";
 import { useDarkMode } from "../context/DarkMode";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useProducts from "../context/ProductContext";
 import CardProduct from "../components/CardProduct";
 
@@ -9,11 +9,38 @@ const BestSellers = () => {
   const { products, loading, error } = useProducts();
   const { isDarkMode } = useDarkMode();
 
+  // Mengambil query params
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sort = searchParams.get("sort"); // termurah / termahal
+  const minRating = parseFloat(searchParams.get("rating") ?? "0");
+
   // Filter best sellers
   const bestSellers = useMemo(
     () => products.filter((product) => product.terjual > 2),
     [products]
   );
+
+  // Filter berdasarkan rating dan harga
+  const [filteredProducts, setFilteredProducts] = useState(bestSellers);
+
+  useEffect(() => {
+    let filtered = [...bestSellers];
+
+    // Filter berdasarkan rating minimal
+    filtered = filtered.filter((product) => {
+      const rating = product.average_rating || 0;
+      return rating >= minRating;
+    });
+
+    // Sortir harga
+    if (sort === "termurah") {
+      filtered.sort((a, b) => a.harga - b.harga);
+    } else if (sort === "termahal") {
+      filtered.sort((a, b) => b.harga - a.harga);
+    }
+
+    setFilteredProducts(filtered);
+  }, [bestSellers, sort, minRating]);
 
   if (loading)
     return (
@@ -45,14 +72,52 @@ const BestSellers = () => {
           </span>
         </div>
 
+        <div className="flex gap-4 px-6">
+          {/* Filter berdasarkan Harga */}
+          <select
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "") {
+                searchParams.delete("sort"); // Hapus param jika kosong
+              } else {
+                searchParams.set("sort", value);
+              }
+              setSearchParams(searchParams);
+            }}
+            value={sort || ""}
+            className="border p-2 rounded"
+          >
+            <option value="">Urutkan Harga</option>
+            <option value="termurah">Termurah ke Termahal</option>
+            <option value="termahal">Termahal ke Termurah</option>
+          </select>
+
+          {/* Filter berdasarkan Rating */}
+          <select
+            onChange={(e) => {
+              searchParams.set("rating", e.target.value);
+              setSearchParams(searchParams);
+            }}
+            value={minRating || ""}
+            className="border p-2 rounded"
+          >
+            <option value="0">Semua Rating</option>
+            <option value="1">⭐1</option>
+            <option value="2">⭐2</option>
+            <option value="3">⭐3</option>
+            <option value="4">⭐4</option>
+            <option value="5">⭐5</option>
+          </select>
+        </div>
+
         <div className="p-6 w-full">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {loading ? (
               <div className="flex justify-center items-center h-40">
                 <p className="text-gray-500">Loading...</p>
               </div>
-            ) : bestSellers.length > 0 ? (
-              bestSellers.map((product) => (
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
                 <CardProduct
                   key={product.id}
                   {...product}

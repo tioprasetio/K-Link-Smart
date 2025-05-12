@@ -11,6 +11,16 @@ const SearchBar = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
 
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+  if (recognition) {
+    recognition.lang = "id-ID";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+  }
+
   // Ambil data produk dari custom hook
   const { products, loading } = useProducts();
 
@@ -45,6 +55,38 @@ const SearchBar = () => {
     if (query.trim().length > 0) {
       navigate(`/all-product?keyword=${encodeURIComponent(query.trim())}`);
     }
+  };
+
+  const handleVoiceSearch = () => {
+    if (!recognition) {
+      alert("Browser tidak mendukung Speech Recognition");
+      return;
+    }
+
+    recognition.start();
+
+    recognition.onstart = () => {
+      setQuery("Mendengarkan...");
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+
+      // Tunggu 500ms lalu jalankan pencarian otomatis
+      setTimeout(() => {
+        navigate(
+          `/all-product?keyword=${encodeURIComponent(transcript.trim())}`
+        );
+      }, 500);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onerror = (event: any) => {
+      console.error("Voice recognition error:", event.error);
+      setQuery("");
+    };
   };
 
   // Navigasi ke halaman produk dengan ID + Slug
@@ -88,8 +130,8 @@ const SearchBar = () => {
             id="default-search"
             className={`${
               isDarkMode
-                ? "bg-[#303030] text-white border-gray-700"
-                : "bg-white text-[#353535] border-gray-300"
+                ? "bg-[#303030] text-white border-gray-700 placeholder-gray-300"
+                : "bg-[#f4f6f9] text-[#353535] border-gray-300 placeholder-gray-400 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
             } block w-full p-4 ps-10 text-sm border rounded-lg focus:ring-[#28a154] focus:border-[#28a154]`}
             placeholder="Cari produk"
             value={query}
@@ -98,11 +140,27 @@ const SearchBar = () => {
             disabled={loading} // Nonaktifkan input saat loading
           />
           <button
+            type="button"
+            onClick={handleVoiceSearch}
+            className={`${
+              isDarkMode
+                ? "text-[#f0f0f0] bg-[#140C00]"
+                : "text-[#353535] bg-[#f0f0f0]"
+            } cursor-pointer absolute end-[65px] top-1/2 transform -translate-y-1/2 hover:text-white hover:bg-[#28a154] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm text-sm px-4 py-2`}
+          >
+            <i className="bx bx-microphone"></i>
+          </button>
+
+          <button
             type="submit"
-            className="text-white cursor-pointer absolute end-2.5 bottom-2.5 bg-[#28a154] hover:bg-[#167e3c] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm text-sm px-4 py-2"
+            className={`${
+              isDarkMode
+                ? "text-[#f0f0f0] bg-[#140C00]"
+                : "text-[#f0f0f0] bg-[#28a154]"
+            } cursor-pointer absolute end-2.5 top-1/2 transform -translate-y-1/2  hover:bg-[#167e3c] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm text-sm px-4 py-2`}
             disabled={loading} // Nonaktifkan tombol saat loading
           >
-            {loading ? "Loading..." : "Cari"}
+            {loading ? "Loading..." : <i className="bx bx-search"></i>}
           </button>
         </div>
       </form>

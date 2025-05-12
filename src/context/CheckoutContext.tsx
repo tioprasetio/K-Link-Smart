@@ -16,6 +16,7 @@ interface Product {
   picture: string;
   bv: number;
   beratPengiriman: number;
+  variant?: string;
 }
 
 interface CheckoutContextType {
