@@ -192,9 +192,11 @@ export default function MyOrderDetailPage() {
                         <p className="font-semibold truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
                           {product.name}
                         </p>
-                        <p className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
-                          Variant: {product.variant}
-                        </p>
+                        {product.variant && (
+                          <p className="font-semibold text-sm truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
+                            Variant: {product.variant}
+                          </p>
+                        )}
                         <p className="text-sm">{formatRupiah(product.price)}</p>
                       </div>
                       {/* Quantity dan Subtotal (sejajar ke kanan) */}

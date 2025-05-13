@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
 import NavbarComponent from "../components/Navbar";
+import usePlans from "../context/PlanContext";
 
 const EditProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -10,8 +11,10 @@ const EditProfile = () => {
   const { isDarkMode } = useDarkMode();
   const { user, updateProfile } = useAuth();
   const [error, setError] = useState("");
+  const { plans } = usePlans();
   const [formData, setFormData] = useState({
     name: "",
+    plan: 1,
     no_hp: "",
     alamat: "",
     jenis_kelamin: "",
@@ -33,6 +36,7 @@ const EditProfile = () => {
     if (user) {
       setFormData({
         name: user.name || "",
+        plan: user.id_plan || 1,
         no_hp: user.no_hp || "",
         alamat: user.alamat || "",
         jenis_kelamin: user.jenis_kelamin || "",
@@ -218,6 +222,26 @@ const EditProfile = () => {
                     : "bg-[#f0f0f0] text-[#353535]"
                 }`}
               />
+            </div>
+
+            <div>
+              <select
+                name="id_plan"
+                value={formData.plan}
+                onChange={handleChange}
+                required
+                className={`w-full p-4 border-none rounded-xl ${
+                  isDarkMode
+                    ? "bg-[#252525] text-[#f0f0f0]"
+                    : "bg-[#f0f0f0] text-[#353535]"
+                }`}
+              >
+                {plans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>
+                    {plan.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>

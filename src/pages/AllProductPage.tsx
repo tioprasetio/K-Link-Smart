@@ -83,7 +83,11 @@ const AllProduct = () => {
               setSearchParams(searchParams);
             }}
             value={sort || ""}
-            className="border p-2 rounded"
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
+                : "bg-[#F4F6F9] text-[#353535] border-gray-200"
+            }border p-2 rounded focus:outline-none focus:ring-green-500 focus:border-green-500`}
           >
             <option value="">Urutkan Harga</option>
             <option value="termurah">Termurah ke Termahal</option>
@@ -96,7 +100,11 @@ const AllProduct = () => {
               setSearchParams(searchParams);
             }}
             defaultValue={minRating || ""}
-            className="border p-2 rounded"
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
+                : "bg-[#F4F6F9] text-[#353535] border-gray-200"
+            }border p-2 rounded focus:outline-none focus:ring-green-500 focus:border-green-500`}
           >
             <option value="0">Semua Rating</option>
             <option value="1">⭐1</option>

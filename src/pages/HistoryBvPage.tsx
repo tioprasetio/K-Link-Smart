@@ -5,12 +5,15 @@ import Swal from "sweetalert2";
 import NavbarComponent from "../components/Navbar";
 import { useDarkMode } from "../context/DarkMode";
 import { useAuth } from "../context/AuthContext";
+import { getPlanName } from "../utils/getPlanName";
+import usePlans from "../context/PlanContext";
 
 interface BVItem {
   transaction_product_id: number;
   transaction_id: number;
   created_at: string;
   product_name: string;
+  checkout_plan: number;
   quantity: number;
   product_bv: number;
   total_bv: number;
@@ -25,6 +28,7 @@ const HistoryBvPage = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
   const { user, isLoggedIn } = useAuth();
+  const { plans } = usePlans();
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -139,6 +143,9 @@ const HistoryBvPage = () => {
                   <div>
                     <p className="font-semibold truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
                       {item.product_name}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      {getPlanName(item.checkout_plan, plans)}
                     </p>
                     <p className="text-sm text-gray-400">
                       Quantity: {item.quantity} | BV/item: {item.product_bv}

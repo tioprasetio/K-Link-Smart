@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useDarkMode } from "../context/DarkMode";
 import NavbarComponent from "../components/Navbar";
+import usePlans from "../context/PlanContext";
 
 const Register = () => {
   const [formData, setFormData] = useState({
+    id_plan: 1,
     name: "",
     email: "",
     password: "",
@@ -21,6 +23,7 @@ const Register = () => {
 
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { plans } = usePlans(); // ← pakai tanda kurung () ✔️
 
   const { isLoggedIn, register, loading } = useAuth(); // Gunakan useAuth hook
   const { isDarkMode } = useDarkMode();
@@ -261,6 +264,23 @@ const Register = () => {
           >
             <option value="L">Laki-laki</option>
             <option value="P">Perempuan</option>
+          </select>
+          <select
+            name="id_plan"
+            value={formData.id_plan}
+            onChange={handleChange}
+            required
+            className={`w-full p-4 border-none rounded-xl ${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0]"
+                : "bg-[#f0f0f0] text-[#353535]"
+            }`}
+          >
+            {plans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {plan.name}
+              </option>
+            ))}
           </select>
           <input
             type="date"

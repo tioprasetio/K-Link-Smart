@@ -14,6 +14,7 @@ import PromoProduct from "../components/PromoProduct";
 import { Period } from "../types/BvPeriod";
 import { useCart } from "../context/CartContext";
 import ProductInformationCheckout from "../components/ProductInformationCheckout";
+import usePlans from "../context/PlanContext";
 
 const CheckoutPage = () => {
   // Context hooks
@@ -21,6 +22,9 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
   const { user, loading } = useAuth();
+
+  const { plans, error } = usePlans();
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
 
   // Tambahkan state baru di bagian atas
   const [periods, setPeriods] = useState<Period[]>([]);
@@ -391,6 +395,7 @@ const CheckoutPage = () => {
         `${import.meta.env.VITE_APP_API_URL}/api/create-transaction`,
         {
           userId: user?.id,
+          id_plan: selectedPlanId,
           receiver_name: receiverName,
           receiver_phone: receiverPhone,
           receiver_email: receiverEmail,
@@ -634,6 +639,30 @@ const CheckoutPage = () => {
           </p>
         </div>
       </div>
+
+      {loading ? (
+        <p>Loading plans...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">Pilih Plan:</label>
+          <div className="space-y-2">
+            {plans.map((plan) => (
+              <label key={plan.id} className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="plan"
+                  value={plan.id}
+                  checked={selectedPlanId === plan.id}
+                  onChange={() => setSelectedPlanId(plan.id)}
+                />
+                <span>{plan.name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Metode Pengiriman */}
       <div

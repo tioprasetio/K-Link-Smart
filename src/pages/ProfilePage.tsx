@@ -5,16 +5,20 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useWishlist } from "../context/WishlistContext";
+import { getPlanName } from "../utils/getPlanName";
+import usePlans from "../context/PlanContext";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const { isDarkMode } = useDarkMode();
   const { wishlistItems } = useWishlist();
   const { user } = useAuth();
+  const { plans } = usePlans(); // ← pakai tanda kurung () ✔️
   const [formData, setFormData] = useState({
     name: "",
     profile_picture: "",
     BV: 0,
+    plan: 1,
     email: "",
   });
   const navigate = useNavigate();
@@ -42,6 +46,7 @@ const ProfilePage = () => {
         profile_picture:
           typeof user.profile_picture === "string" ? user.profile_picture : "",
         BV: user.BV || 0,
+        plan: user.id_plan || 1,
         email: user.email || "",
       });
     }
@@ -133,6 +138,10 @@ const ProfilePage = () => {
                 <div className="flex flex-row items-center gap-1">
                   <i className="bx bx-coin-stack"></i>
                   <h1>{formData.BV}</h1>
+                </div>
+                <div className="flex flex-row items-center gap-1">
+                  <i className="bx bx-archive-in"></i>
+                  <h1>{getPlanName(formData.plan, plans)}</h1>
                 </div>
                 <div className="flex flex-row items-center gap-1">
                   <i className="bx bx-envelope"></i>

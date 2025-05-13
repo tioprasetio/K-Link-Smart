@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 
 interface User {
   id?: number;
+  id_plan?: number;
   name?: string;
   email: string;
   no_hp?: string;

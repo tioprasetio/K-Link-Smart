@@ -13,6 +13,7 @@ interface TransactionProduct {
 interface Transaction {
   id: number;
   order_id: string;
+  id_plan: number;
   created_at: string;
   gross_amount: number;
   status: string;
@@ -35,13 +36,23 @@ interface BvReportResponse {
   };
 }
 
-import { useState, useEffect } from "react";
+// Interface untuk menampung BV per plan
+interface BvByPlan {
+  id_plan: number;
+  plan_name: string;
+  total_bv: number;
+  transactions: Transaction[];
+}
+
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Period } from "../types/BvPeriod";
 import { useDarkMode } from "../context/DarkMode";
 import NavbarComponent from "../components/Navbar";
 import { useNavigate, useSearchParams } from "react-router";
 import { formatRupiah } from "../utils/formatCurrency";
+import { getPlanName } from "../utils/getPlanName";
+import usePlans from "../context/PlanContext";
 
 const BVReport = () => {
   const [report, setReport] = useState<BvReportResponse["data"] | null>(null);
@@ -49,6 +60,7 @@ const BVReport = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { plans } = usePlans();
 
   const token = localStorage.getItem("token");
   const { isDarkMode } = useDarkMode();
@@ -72,6 +84,38 @@ const BVReport = () => {
         ? transaction.order_id.toLowerCase().includes(inputValue.toLowerCase())
         : true
     ) || [];
+
+  const bvByPlan = useMemo(() => {
+    if (!report || !plans) return [];
+
+    // Membuat grup transaksi berdasarkan plan
+    const planGroups = new Map<number, BvByPlan>();
+
+    filteredOrders.forEach((transaction) => {
+      const planId = transaction.id_plan;
+      const planName = getPlanName(planId, plans) || "Unknown Plan";
+
+      // Menambahkan plan ke grup jika belum ada
+      if (!planGroups.has(planId)) {
+        planGroups.set(planId, {
+          id_plan: planId,
+          plan_name: planName,
+          total_bv: 0,
+          transactions: [],
+        });
+      }
+
+      // Menambahkan BV transaksi ke total plan
+      const group = planGroups.get(planId)!;
+      group.total_bv += Number(transaction.total_bv);
+      group.transactions.push(transaction);
+    });
+
+    // Mengubah Map menjadi array dan mengurutkan berdasarkan BV tertinggi
+    return Array.from(planGroups.values()).sort(
+      (a, b) => b.total_bv - a.total_bv
+    );
+  }, [filteredOrders, plans]);
 
   useEffect(() => {
     const fetchPeriods = async () => {
@@ -245,7 +289,13 @@ const BVReport = () => {
                       : "bg-[#F4F6F9] text-[#353535]"
                   } p-3 rounded-lg`}
                 >
-                  <p className="text-sm text-gray-500">Periode</p>
+                  <p
+                    className={`${
+                      isDarkMode ? "text-gray-300" : "text-gray-500"
+                    } text-sm`}
+                  >
+                    Periode
+                  </p>
                   <p className="font-bold">{report.period.name}</p>
                 </div>
                 <div
@@ -255,7 +305,13 @@ const BVReport = () => {
                       : "bg-[#F4F6F9] text-[#353535]"
                   } p-3 rounded-lg`}
                 >
-                  <p className="text-sm text-gray-500">Total BV</p>
+                  <p
+                    className={`${
+                      isDarkMode ? "text-gray-300" : "text-gray-500"
+                    } text-sm`}
+                  >
+                    Total BV
+                  </p>
                   <p className="font-bold">{report.total_bv}</p>
                 </div>
                 <div
@@ -265,7 +321,13 @@ const BVReport = () => {
                       : "bg-[#F4F6F9] text-[#353535]"
                   } p-3 rounded-lg`}
                 >
-                  <p className="text-sm text-gray-500">Rentang Waktu</p>
+                  <p
+                    className={`${
+                      isDarkMode ? "text-gray-300" : "text-gray-500"
+                    } text-sm`}
+                  >
+                    Rentang Waktu
+                  </p>
                   <p className="font-bold">
                     {formatDate(report.period.start_date)} -{" "}
                     {formatDate(report.period.end_date)}
@@ -273,6 +335,46 @@ const BVReport = () => {
                 </div>
               </div>
             </div>
+
+            {/* Bagian baru: Tampilan BV per Plan */}
+            {bvByPlan.length > 0 && (
+              <div
+                className={`${
+                  isDarkMode
+                    ? "bg-[#404040] text-[#f0f0f0]"
+                    : "bg-[#FFFFFF] text-[#353535]"
+                }  p-4 rounded-lg`}
+              >
+                <h3
+                  className={`${
+                    isDarkMode ? "text-[#28a154]" : "text-[#4dd27e]"
+                  } font-bold text-lg mb-3`}
+                >
+                  BV Plan
+                </h3>
+                <div className="space-y-3">
+                  {bvByPlan.map((planData) => (
+                    <div
+                      key={planData.id_plan}
+                      className={`${
+                        isDarkMode
+                          ? "bg-[#252525] text-[#f0f0f0]"
+                          : "bg-[#F4F6F9] text-[#353535]"
+                      } p-3 rounded-lg flex justify-between items-center`}
+                    >
+                      <div>
+                        <p className="font-medium">{planData.plan_name}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-[#28a154]">
+                          {planData.total_bv} BV
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">Detail Transaksi</h3>
@@ -339,6 +441,8 @@ const BVReport = () => {
                           {formatDate(transaction.created_at)}{" "}
                           <i className="bx bx-right-arrow-alt"></i>{" "}
                           {transaction.status}
+                          <i className="bx bx-right-arrow-alt"></i>{" "}
+                          {getPlanName(transaction.id_plan, plans)}
                         </p>
                       </div>
                       <div className="text-right">
@@ -376,7 +480,7 @@ const BVReport = () => {
                                 </h5>
                                 {product.variant && (
                                   <h5 className="text-sm">
-                                   Variant: {product.variant}
+                                    Variant: {product.variant}
                                   </h5>
                                 )}
                                 <p className="text-sm">
