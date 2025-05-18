@@ -4,4 +4,5 @@ export interface Period {
   start_date: string | Date;
   end_date: string | Date;
   is_cutoff: boolean;
+  is_calculated: boolean;
 }

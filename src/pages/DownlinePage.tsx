@@ -61,12 +61,9 @@ const DownlinePage: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : downlines.length === 0 ? (
-          <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
-            <p
-              className={`${
-                isDarkMode ? "text-[#353535]" : "text-[#353535]"
-              } text-left`}
-            >
+          <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-yellow-600 text-sm">
+              <i className="bx bx-x-circle mr-1"></i>
               Belum ada downline.
             </p>
           </div>

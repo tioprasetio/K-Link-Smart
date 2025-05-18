@@ -87,13 +87,12 @@ const AllProduct = () => {
               isDarkMode
                 ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
                 : "bg-[#F4F6F9] text-[#353535] border-gray-200"
-            }border p-2 rounded focus:outline-none focus:ring-green-500 focus:border-green-500`}
+            } p-2 rounded-lg text-center font-semibold border border-green-500 text-green-600 focus:ring-green-500 focus:border-green-500 transition cursor-pointer`}
           >
             <option value="">Urutkan Harga</option>
             <option value="termurah">Termurah ke Termahal</option>
             <option value="termahal">Termahal ke Termurah</option>
           </select>
-
           <select
             onChange={(e) => {
               searchParams.set("rating", e.target.value);
@@ -104,7 +103,7 @@ const AllProduct = () => {
               isDarkMode
                 ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
                 : "bg-[#F4F6F9] text-[#353535] border-gray-200"
-            }border p-2 rounded focus:outline-none focus:ring-green-500 focus:border-green-500`}
+            } p-2 rounded-lg text-center font-semibold border border-green-500 text-green-600 focus:ring-green-500 focus:border-green-500 transition cursor-pointer`}
           >
             <option value="0">Semua Rating</option>
             <option value="1">⭐1</option>
@@ -131,8 +130,11 @@ const AllProduct = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
-              <p className="text-left text-gray-500">Produk tidak ditemukan.</p>
+            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-red-600 text-sm">
+                <i className="bx bx-x-circle mr-1"></i>
+                Produk tidak ditemukan.
+              </p>
             </div>
           )}
         </div>

@@ -7,17 +7,21 @@ import { useDarkMode } from "../context/DarkMode";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import Swal from "sweetalert2";
 import { useCheckout } from "../context/CheckoutContext";
+import { getPlanName } from "../utils/getPlanName";
+import usePlans from "../context/PlanContext";
 
 const MyOrderPage = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   const { setSelectedProducts } = useCheckout();
   const [comments, setComments] = useState<{ [productId: number]: string }>({});
   const [ratings, setRatings] = useState<{ [productId: number]: number }>({});
   const [reviewedProducts, setReviewedProducts] = useState<Set<string>>(
     new Set()
   );
+  const { plans } = usePlans();
   const [searchParams, setSearchParams] = useSearchParams();
   const filterStatus = searchParams.get("filter");
   const [inputValue, setInputValue] = useState(
@@ -28,12 +32,16 @@ const MyOrderPage = () => {
     {
       order_id: string;
       gross_amount: number;
+      id_plan: number;
+      bv_period_id: number;
+      bv_period_name: string;
       status: string;
       shipment_status: string;
       created_at: string;
       products: {
         id: number;
         name: string;
+        bv: number;
         picture: string;
         harga: number;
         quantity: number;
@@ -58,6 +66,7 @@ const MyOrderPage = () => {
 
   useEffect(() => {
     if (user) {
+      setLoading(true);
       console.log("User Data:", user);
       axios
         .get(
@@ -66,6 +75,7 @@ const MyOrderPage = () => {
         .then((response) => {
           console.log("Orders Response:", response.data); // Cek data API di console
           setOrders(response.data.data);
+          setLoading(false);
         })
         .catch((error) => {
           console.error("❌ Fetch Orders Failed:", error);
@@ -208,6 +218,21 @@ const MyOrderPage = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div
+        className={`${
+          isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
+      >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
+        <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
+          Memuat data...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <NavbarComponent />
@@ -272,17 +297,14 @@ const MyOrderPage = () => {
           className={`${
             isDarkMode
               ? "bg-[#404040] text-[#f0f0f0] border-[#282828] placeholder-gray-300"
-              : "bg-[#FFFFFF] text-[#353535] border-gray-200 placeholder-gray-400"
-          } mb-4 px-4 py-2 border rounded-lg w-full`}
+              : "bg-[#F4F6F9] text-[#353535] border-gray-200 placeholder-gray-400 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+          } mb-4 px-4 py-2 border rounded-lg w-full focus:ring-[#28a154] focus:border-[#28a154]`}
         />
 
-        {filteredOrders.length === 0 ? (
-          <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
-            <p
-              className={`${
-                isDarkMode ? "text-[#353535]" : "text-[#353535]"
-              } text-left`}
-            >
+        {!loading && filteredOrders.length === 0 ? (
+          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600 text-sm">
+              <i className="bx bx-x-circle mr-1"></i>
               {filterStatus
                 ? `Tidak ada pesanan dengan status "${filterStatus}".`
                 : "Tidak ada pesanan."}
@@ -320,7 +342,9 @@ const MyOrderPage = () => {
                       <li key={item.id} className="py-1">
                         <div
                           className={`${
-                            isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+                            isDarkMode
+                              ? "bg-[#252525]"
+                              : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                           } flex p-2 rounded-lg`}
                         >
                           <img
@@ -391,8 +415,8 @@ const MyOrderPage = () => {
                               <textarea
                                 className={`${
                                   isDarkMode
-                                    ? "bg-[#252525] text-[#F0F0F0] placeholder-gray-300"
-                                    : "bg-[#FFFFFF] text-[#353535] placeholder-gray-400"
+                                    ? "bg-[#252525] text-[#F0F0F0] placeholder-gray-300 border-gray-700"
+                                    : "bg-[#F4F6F9] text-[#353535] placeholder-gray-400 border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                                 } w-full border rounded-md p-2 text-sm`}
                                 rows={2}
                                 placeholder="Tulis komentar untuk produk ini..."
@@ -406,7 +430,7 @@ const MyOrderPage = () => {
                                   onClick={() =>
                                     handleSubmitComment(item.id, order.order_id)
                                   }
-                                  className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                                  className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm cursor-pointer"
                                 >
                                   Kirim Ulasan
                                 </button>
@@ -419,6 +443,25 @@ const MyOrderPage = () => {
                   {/* Total pesanan */}
                   <hr className="mt-4 border-t border-gray-300" />
                   <div className="my-4 pt-3">
+                    <div className="flex justify-between items-center font-normal">
+                      <span>BV Plan</span>
+                      <span>{getPlanName(order.id_plan, plans)}</span>
+                    </div>
+                    <div className="flex justify-between items-center font-normal">
+                      <span>BV Period</span>
+                      <span>{order.bv_period_name}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold">
+                      <span>BV Didapat:</span>
+                      <span>
+                        {order.products.reduce(
+                          (total, product) =>
+                            total + (product.bv ?? 0) * product.quantity,
+                          0
+                        )}{" "}
+                        BV
+                      </span>
+                    </div>
                     <div className="flex justify-between font-semibold">
                       <span>Total Pesanan:</span>
                       <span>{formatRupiah(order.gross_amount)}</span>

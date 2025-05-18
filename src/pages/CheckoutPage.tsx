@@ -64,6 +64,7 @@ const CheckoutPage = () => {
     null
   );
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Voucher
   const [voucherCode, setVoucherCode] = useState("");
@@ -369,6 +370,11 @@ const CheckoutPage = () => {
       return;
     }
 
+    if (!selectedPlanId) {
+      Swal.fire("Error", "Pilih Plan untuk BV terlebih dahulu", "error");
+      return;
+    }
+
     const overStockProducts = selectedProducts.filter(
       (product) => product.quantity > product.stock
     );
@@ -391,6 +397,8 @@ const CheckoutPage = () => {
     const token = localStorage.getItem("token");
 
     try {
+      setIsProcessing(true);
+
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_URL}/api/create-transaction`,
         {
@@ -438,6 +446,8 @@ const CheckoutPage = () => {
       const message =
         error.response?.data?.message || "Failed to create transaction";
       Swal.fire("Error", message, "error");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -446,8 +456,9 @@ const CheckoutPage = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
-        } flex justify-center items-center min-h-screen`}
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
       >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
         <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
           Memuat data...
         </p>
@@ -478,7 +489,9 @@ const CheckoutPage = () => {
         {/* Tampilkan data user sebagai default */}
         <div
           className={`${
-            isDarkMode ? "bg-[#252525]" : "bg-gray-100"
+            isDarkMode
+              ? "bg-[#252525]"
+              : "bg-[#F4F6F9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
           } mb-4 p-3  rounded-lg`}
         >
           <p className="text-lg font-bold">{user?.name}</p>
@@ -518,9 +531,9 @@ const CheckoutPage = () => {
               onChange={(e) => setReceiverName(e.target.value)}
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
-              } border p-2 rounded w-full`}
+                  ? "bg-[#252525] text-[#FFFFFF] border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } border p-2 rounded-lg w-full`}
               placeholder="Nama Penerima"
               required
             />
@@ -530,9 +543,9 @@ const CheckoutPage = () => {
               onChange={(e) => setReceiverPhone(e.target.value)}
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
-              } border p-2 rounded w-full`}
+                  ? "bg-[#252525] text-[#FFFFFF] border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } border p-2 rounded-lg w-full`}
               placeholder="Nomor HP"
               required
             />
@@ -541,9 +554,9 @@ const CheckoutPage = () => {
               onChange={(e) => setReceiverAddress(e.target.value)}
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
-              } border p-2 rounded w-full`}
+                  ? "bg-[#252525] text-[#FFFFFF] border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } border p-2 rounded-lg w-full`}
               placeholder="Alamat Lengkap"
               required
             ></textarea>
@@ -558,7 +571,7 @@ const CheckoutPage = () => {
               }}
               className={`${
                 isDarkMode ? "text-white" : "text-white"
-              } bg-[#28a154] p-2 rounded-lg text-sm mt-1 text-left cursor-pointer`}
+              } bg-[#28a154] p-2 rounded-sm text-sm mt-1 text-left cursor-pointer`}
             >
               Kembalikan ke data profile
             </button>
@@ -586,8 +599,8 @@ const CheckoutPage = () => {
             onChange={(e) => setVoucherCode(e.target.value)}
             className={`${
               isDarkMode
-                ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300"
-                : "bg-[#FFFFFF] text-[#353535] placeholder-gray-400"
+                ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300 border-gray-700"
+                : "bg-[#F4F6F9] text-[#353535] placeholder-gray-400 border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
             } border p-2 rounded w-full`}
           />
           <button
@@ -618,9 +631,9 @@ const CheckoutPage = () => {
               onChange={(e) => setSelectedBvPeriod(e.target.value)}
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
-              } border p-2 rounded w-full cursor-pointer`}
+                  ? "bg-[#252525] text-[#FFFFFF] border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } border p-2 rounded-lg w-full cursor-pointer`}
             >
               <option value="">Pilih Periode BV</option>
               {periods.map((period: Period) => (
@@ -633,36 +646,69 @@ const CheckoutPage = () => {
           <p
             className={`${
               isDarkMode ? "text-gray-300" : "text-gray-500"
-            } text-sm mt-1`}
+            } text-sm mt-2`}
           >
-            Pilih periode untuk memasukkan BV dari pembelian ini
+            *Pilih periode untuk memasukkan BV dari pembelian ini
           </p>
         </div>
       </div>
 
-      {loading ? (
-        <p>Loading plans...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Pilih Plan:</label>
-          <div className="space-y-2">
+      {/* Plan BV */}
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg shadow mb-6 mt-4 left-0`}
+      >
+        <h2 className="text-lg font-bold mb-3">BV Plan</h2>
+
+        {loading ? (
+          <p>Memuat Plan...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-3">
             {plans.map((plan) => (
-              <label key={plan.id} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="plan"
-                  value={plan.id}
-                  checked={selectedPlanId === plan.id}
-                  onChange={() => setSelectedPlanId(plan.id)}
-                />
-                <span>{plan.name}</span>
-              </label>
+              <div
+                key={plan.id}
+                className={`flex-1 p-4 hover:scale-101 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  selectedPlanId === plan.id
+                    ? isDarkMode
+                      ? "border-2 border-green-500 bg-[#1e3a26]"
+                      : "border-2 border-green-500 bg-green-50"
+                    : isDarkMode
+                    ? "border border-gray-600 bg-[#353535]"
+                    : "border border-gray-300"
+                }`}
+                onClick={() => setSelectedPlanId(plan.id)}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedPlanId === plan.id
+                        ? "border-green-500"
+                        : "border-gray-400"
+                    }`}
+                  >
+                    {selectedPlanId === plan.id && (
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    )}
+                  </div>
+                  <p className="font-semibold">{plan.name}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+        <p
+          className={`${
+            isDarkMode ? "text-gray-300" : "text-gray-500"
+          } text-sm mt-2`}
+        >
+          *Pilih Plan untuk memasukkan BV dari pembelian ini
+        </p>
+      </div>
 
       {/* Metode Pengiriman */}
       <div
@@ -684,9 +730,9 @@ const CheckoutPage = () => {
               placeholder="e.g. 'Bekasi, Jawa Barat'"
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300"
-                  : "bg-[#FFFFFF] text-[#353535] placeholder-gray-400"
-              } flex-1 p-2 border rounded`}
+                  ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300 border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] placeholder-gray-400 border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } flex-1 p-2 border rounded-lg`}
             />
             <button
               onClick={searchDestination}
@@ -707,7 +753,7 @@ const CheckoutPage = () => {
                 className={`${
                   isDarkMode
                     ? "bg-[#353535] hover:bg-[#252525] text-[#FFFFFF]"
-                    : "bg-[#F4F6F9] hover:bg-[#e9eaec] text-[#353535]"
+                    : "bg-[#F4F6F9] hover:bg-[#e9eaec] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 } p-3 mb-2 rounded cursor-pointer`}
                 onClick={() => {
                   setSelectedDestination(destination);
@@ -777,9 +823,9 @@ const CheckoutPage = () => {
               }}
               className={`${
                 isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF]"
-                  : "bg-[#FFFFFF] text-[#353535]"
-              } w-full p-2 border rounded cursor-pointer`}
+                  ? "bg-[#252525] text-[#FFFFFF] border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } w-full p-2 border rounded-lg cursor-pointer`}
               disabled={!selectedDestination}
             >
               <option value="">Pilih Ekspedisi</option>
@@ -824,6 +870,7 @@ const CheckoutPage = () => {
         )}
       </div>
 
+      {/* Payment Method */}
       <div
         className={`${
           isDarkMode
@@ -952,13 +999,16 @@ const CheckoutPage = () => {
           </Btn>
           <Btn
             onClick={handlePayment}
+            disabled={isProcessing}
             className={`${
               isDarkMode
                 ? "bg-[#28a154] text-[#f0f0f0]"
                 : "bg-[#28a154] text-[#f0f0f0]"
-            } px-4 py-2 font-semibold rounded w-1/2`}
+            } px-4 py-2 font-semibold rounded w-1/2 ${
+              isProcessing ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Bayar Sekarang
+            {isProcessing ? "Memproses..." : "Bayar Sekarang"}
           </Btn>
         </div>
       </div>

@@ -86,12 +86,12 @@ const Register = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
-        } flex justify-center items-center min-h-screen`}
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
       >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
         <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
           Memuat data...
         </p>
-        {/* Tambahkan spinner atau skeleton loader di sini */}
       </div>
     );
   }

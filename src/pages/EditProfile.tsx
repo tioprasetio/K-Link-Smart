@@ -13,6 +13,7 @@ const EditProfile = () => {
   const [error, setError] = useState("");
   const { plans } = usePlans();
   const [formData, setFormData] = useState({
+    uid: "",
     name: "",
     plan: 1,
     no_hp: "",
@@ -35,6 +36,7 @@ const EditProfile = () => {
     console.log("Tanggal lahir sebelum masuk ke state:", user?.tanggal_lahir);
     if (user) {
       setFormData({
+        uid: user.uid || "",
         name: user.name || "",
         plan: user.id_plan || 1,
         no_hp: user.no_hp || "",
@@ -112,8 +114,9 @@ const EditProfile = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
-        } flex justify-center items-center min-h-screen`}
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
       >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
         <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
           Memuat data...
         </p>
@@ -219,9 +222,28 @@ const EditProfile = () => {
                 className={`w-full p-4 border-none rounded-xl ${
                   isDarkMode
                     ? "bg-[#252525] text-[#f0f0f0]"
-                    : "bg-[#f0f0f0] text-[#353535]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 }`}
               />
+            </div>
+
+            <div>
+              <label
+                className={`${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                } block mb-1`}
+              >
+                Uid
+              </label>
+              <p
+                className={`w-full p-4 border-none rounded-xl ${
+                  isDarkMode
+                    ? "bg-[#252525] text-[#f0f0f0]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                }`}
+              >
+                {formData.uid}
+              </p>
             </div>
 
             <div>
@@ -233,7 +255,7 @@ const EditProfile = () => {
                 className={`w-full p-4 border-none rounded-xl ${
                   isDarkMode
                     ? "bg-[#252525] text-[#f0f0f0]"
-                    : "bg-[#f0f0f0] text-[#353535]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 }`}
               >
                 {plans.map((plan) => (
@@ -261,7 +283,7 @@ const EditProfile = () => {
                 className={`w-full p-4 border-none rounded-xl ${
                   isDarkMode
                     ? "bg-[#252525] text-[#f0f0f0]"
-                    : "bg-[#f0f0f0] text-[#353535]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 }`}
               />
             </div>
@@ -282,7 +304,7 @@ const EditProfile = () => {
                 className={`w-full p-4 border-none rounded-xl ${
                   isDarkMode
                     ? "bg-[#252525] text-[#f0f0f0]"
-                    : "bg-[#f0f0f0] text-[#353535]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 }`}
               />
             </div>
@@ -295,7 +317,7 @@ const EditProfile = () => {
               className={`w-full p-4 border-none rounded-xl ${
                 isDarkMode
                   ? "bg-[#252525] text-[#f0f0f0]"
-                  : "bg-[#f0f0f0] text-[#353535]"
+                  : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
               }`}
             >
               <option value="">Pilih</option>
@@ -320,7 +342,7 @@ const EditProfile = () => {
                 className={`w-full p-4 border-none rounded-xl ${
                   isDarkMode
                     ? "bg-[#252525] text-[#f0f0f0]"
-                    : "bg-[#f0f0f0] text-[#353535]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 }`}
               />
             </div>

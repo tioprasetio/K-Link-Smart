@@ -15,6 +15,8 @@ const ProfilePage = () => {
   const { user } = useAuth();
   const { plans } = usePlans(); // ← pakai tanda kurung () ✔️
   const [formData, setFormData] = useState({
+    id: 0,
+    uid: "",
     name: "",
     profile_picture: "",
     BV: 0,
@@ -42,6 +44,8 @@ const ProfilePage = () => {
     console.log("Tanggal lahir sebelum masuk ke state:", user?.tanggal_lahir);
     if (user) {
       setFormData({
+        uid: user.uid || "",
+        id: user.id || 0,
         name: user.name || "",
         profile_picture:
           typeof user.profile_picture === "string" ? user.profile_picture : "",
@@ -79,8 +83,9 @@ const ProfilePage = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
-        } flex justify-center items-center min-h-screen`}
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
       >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
         <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
           Memuat data...
         </p>
@@ -114,46 +119,57 @@ const ProfilePage = () => {
           </h1>
         </div>
 
+        {/* Biodata Info */}
         <div
           className={`${
             isDarkMode
               ? "bg-[#404040] text-[#f0f0f0]"
               : "bg-[#FFFFFF] text-[#353535]"
-          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
+          } p-4 rounded-lg flex flex-col items-center gap-4 mb-4 mt-4`}
         >
-          <div className="flex flex-col gap-3 font-bold">
-            <div className="flex flex-row items-center gap-3">
-              {/* <i className="bx bx-user"></i> */}
-              <img
-                src={`${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
-                  formData.profile_picture
-                }`}
-                alt="Current Profile"
-                className="w-13 h-13 rounded-full"
-              />
-              <div className="flex flex-col">
-                <h1 className="truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
-                  {formData.name}
-                </h1>
-                <div className="flex flex-row items-center gap-1">
-                  <i className="bx bx-coin-stack"></i>
-                  <h1>{formData.BV}</h1>
-                </div>
-                <div className="flex flex-row items-center gap-1">
-                  <i className="bx bx-archive-in"></i>
-                  <h1>{getPlanName(formData.plan, plans)}</h1>
-                </div>
-                <div className="flex flex-row items-center gap-1">
-                  <i className="bx bx-envelope"></i>
-                  <h1 className="truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
-                    {formData.email}
-                  </h1>
-                </div>
-              </div>
+          <img
+            src={`${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+              formData.profile_picture
+            }`}
+            alt="Current Profile"
+            className="w-24 h-24 rounded-full object-cover shadow-lg"
+          />
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold text-xl truncate max-w-[200px] sm:max-w-[300px] md:max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
+              {formData.name}
+            </h1>
+            <p className="font-normal text-sm truncate max-w-[250px] sm:max-w-[400px] md:max-w-[500px] overflow-hidden text-ellipsis whitespace-nowrap">
+              {formData.uid}
+            </p>
+          </div>
+
+          {/* Baris kotak info */}
+          <div className="flex justify-between w-full max-w-xs">
+            <div className="flex flex-col items-center gap-1 w-1/3">
+              <i className="bx bx-coin-stack text-xl"></i>
+              <h1 className="font-semibold text-base">{formData.BV}</h1>
+            </div>
+
+            <div className="flex flex-col items-center gap-1 w-1/3">
+              <i className="bx bx-archive-in text-xl"></i>
+              <h1 className="font-semibold text-base">
+                {getPlanName(formData.plan, plans)}
+              </h1>
+            </div>
+
+            <div className="flex flex-col items-center gap-1 w-1/3">
+              <i className="bx bx-envelope text-xl"></i>
+              <h1 className="font-semibold text-base truncate max-w-[80px] text-center">
+                {formData.email}
+              </h1>
             </div>
           </div>
-          <Link to="/edit-profile">
-            <i className="bx bx-right-arrow-alt text-2xl"></i>
+
+          <Link
+            to="/edit-profile"
+            className="bg-[#28A154] text-[#FFFFFF] p-2 items-center flex gap-1 justify-center rounded-lg text-center font-semibold w-full cursor-pointer"
+          >
+            <i className="bx bx-cog text-xl"></i> Edit Profile
           </Link>
         </div>
 

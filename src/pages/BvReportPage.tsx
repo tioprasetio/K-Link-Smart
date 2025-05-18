@@ -44,6 +44,14 @@ interface BvByPlan {
   transactions: Transaction[];
 }
 
+interface BvSummary {
+  user_id: string;
+  bv_period_id: string;
+  total_bv: number;
+  plan_a: number;
+  plan_b: number;
+}
+
 import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Period } from "../types/BvPeriod";
@@ -53,6 +61,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { formatRupiah } from "../utils/formatCurrency";
 import { getPlanName } from "../utils/getPlanName";
 import usePlans from "../context/PlanContext";
+import BVRuleModal from "../components/BvRuleModal";
 
 const BVReport = () => {
   const [report, setReport] = useState<BvReportResponse["data"] | null>(null);
@@ -61,6 +70,10 @@ const BVReport = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { plans } = usePlans();
+  const [bvSummary, setBvSummary] = useState<BvSummary | null>(null);
+  const [bvSummaryError, setBvSummaryError] = useState<string | null>(null);
+  const [bvLoading, setBvLoading] = useState<boolean>(false);
+  const [showRuleModal, setShowRuleModal] = useState(false);
 
   const token = localStorage.getItem("token");
   const { isDarkMode } = useDarkMode();
@@ -173,7 +186,7 @@ const BVReport = () => {
     };
 
     fetchReport();
-  }, [selectedPeriod]);
+  }, [selectedPeriod, token]);
 
   const formatDate = (date: string | Date) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -207,6 +220,41 @@ const BVReport = () => {
 
     setSearchParams(newParams);
   };
+
+  useEffect(() => {
+    if (!selectedPeriod) return;
+
+    const fetchBvSummary = async () => {
+      try {
+        setBvLoading(true);
+        setBvSummaryError(null);
+        const res = await axios.get(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/bv-summary?bv_period_id=${selectedPeriod}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.data?.is_calculated === false) {
+          setBvSummary(null);
+          setBvSummaryError(res.data.message || "Periode belum dikalkulasi.");
+        } else {
+          setBvSummary(res.data);
+        }
+        setBvSummary(res.data);
+      } catch (error) {
+        console.error("Failed to load BV summary", error);
+        setBvSummaryError("Gagal memuat data BV Summary");
+      } finally {
+        setBvLoading(false);
+      }
+    };
+
+    fetchBvSummary();
+  }, [selectedPeriod, token]);
 
   return (
     <>
@@ -246,7 +294,7 @@ const BVReport = () => {
             className={`${
               isDarkMode
                 ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
-                : "bg-[#F4F6F9] text-[#353535] border-gray-200"
+                : "bg-[#F4F6F9] text-[#353535] border-gray-200 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
             } block text-sm w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500`}
             disabled={loading}
           >
@@ -286,7 +334,7 @@ const BVReport = () => {
                   className={`${
                     isDarkMode
                       ? "bg-[#252525] text-[#f0f0f0]"
-                      : "bg-[#F4F6F9] text-[#353535]"
+                      : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                   } p-3 rounded-lg`}
                 >
                   <p
@@ -302,7 +350,7 @@ const BVReport = () => {
                   className={`${
                     isDarkMode
                       ? "bg-[#252525] text-[#f0f0f0]"
-                      : "bg-[#F4F6F9] text-[#353535]"
+                      : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                   } p-3 rounded-lg`}
                 >
                   <p
@@ -318,7 +366,7 @@ const BVReport = () => {
                   className={`${
                     isDarkMode
                       ? "bg-[#252525] text-[#f0f0f0]"
-                      : "bg-[#F4F6F9] text-[#353535]"
+                      : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                   } p-3 rounded-lg`}
                 >
                   <p
@@ -350,7 +398,7 @@ const BVReport = () => {
                     isDarkMode ? "text-[#28a154]" : "text-[#4dd27e]"
                   } font-bold text-lg mb-3`}
                 >
-                  BV Plan
+                  BV Plan {report.period.name}
                 </h3>
                 <div className="space-y-3">
                   {bvByPlan.map((planData) => (
@@ -359,7 +407,7 @@ const BVReport = () => {
                       className={`${
                         isDarkMode
                           ? "bg-[#252525] text-[#f0f0f0]"
-                          : "bg-[#F4F6F9] text-[#353535]"
+                          : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                       } p-3 rounded-lg flex justify-between items-center`}
                     >
                       <div>
@@ -373,6 +421,92 @@ const BVReport = () => {
                     </div>
                   ))}
                 </div>
+
+                {/* Alokasi BV Plan dari endpoint bv-summary */}
+                <hr className="mt-4 mb-4 border-t border-gray-300" />
+                <div className="flex flex-row items-center mb-3">
+                  <h3
+                    className={`${
+                      isDarkMode ? "text-[#28a154]" : "text-[#4dd27e]"
+                    } font-bold text-lg`}
+                  >
+                    Alokasi BV Plan {report.period.name}
+                  </h3>
+                  <button
+                    onClick={() => setShowRuleModal(true)}
+                    type="button"
+                    className="ml-auto text-xl text-primary cursor-pointer"
+                  >
+                    <i className="text-xl bx bx-info-circle text-[#28a154]"></i>
+                  </button>
+                </div>
+
+                <BVRuleModal
+                  show={showRuleModal}
+                  onClose={() => setShowRuleModal(false)}
+                />
+
+                {bvLoading ? (
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                    <p className="text-yellow-700">
+                      Memuat data kalkulasi BV...
+                    </p>
+                  </div>
+                ) : bvSummaryError ? (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-red-600 text-sm">
+                      <i className="bx bx-x-circle mr-1"></i>
+                      {bvSummaryError}
+                    </p>
+                  </div>
+                ) : bvSummary ? (
+                  <div className="space-y-3">
+                    <div
+                      className={`${
+                        isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
+                      } p-3 rounded-lg flex justify-between items-center`}
+                    >
+                      <div>
+                        <p className="font-medium">Plan A</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-[#28a154]">
+                          {bvSummary.plan_a} BV
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`${
+                        isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
+                      } p-3 rounded-lg flex justify-between items-center`}
+                    >
+                      <div>
+                        <p className="font-medium">Plan B</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-[#28a154]">
+                          {bvSummary.plan_b} BV
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`${
+                        isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
+                      } p-3 rounded-lg flex justify-between items-center`}
+                    >
+                      <div>
+                        <p className="font-medium">Total BV</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-[#28a154]">
+                          {bvSummary.total_bv} BV
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
 
@@ -403,18 +537,15 @@ const BVReport = () => {
                 }}
                 className={`${
                   isDarkMode
-                    ? "bg-[#404040] text-[#f0f0f0] border-[#282828] placeholder-gray-300"
-                    : "bg-[#FFFFFF] text-[#353535] border-gray-200 placeholder-gray-400"
-                } mb-4 px-4 py-2 border rounded-lg w-full`}
+                    ? "bg-[#303030] text-white border-gray-700 placeholder-gray-300"
+                    : "bg-[#f4f6f9] text-[#353535] border-gray-300 placeholder-gray-400 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                } mb-4 px-4 py-2 border rounded-lg w-full focus:ring-[#28a154] focus:border-[#28a154]`}
               />
 
               {filteredOrders.length === 0 ? (
-                <div className="bg-yellow-50 border-l-8 border-yellow-400 p-4">
-                  <p
-                    className={`${
-                      isDarkMode ? "text-[#353535]" : "text-[#353535]"
-                    } text-left`}
-                  >
+                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-yellow-600 text-sm">
+                    <i className="bx bx-x-circle mr-1"></i>
                     Tidak ada transaksi pada periode ini
                   </p>
                 </div>
@@ -458,7 +589,9 @@ const BVReport = () => {
                         <div
                           key={`${transaction.id}-${product.product_id}`}
                           className={`${
-                            isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+                            isDarkMode
+                              ? "bg-[#252525]"
+                              : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                           } flex p-3 rounded-lg mb-2`}
                         >
                           <div className="flex-shrink-0 h-16 w-16 rounded-md overflow-hidden">
@@ -509,7 +642,9 @@ const BVReport = () => {
 
                     <div
                       className={`${
-                        isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+                        isDarkMode
+                          ? "bg-[#252525]"
+                          : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                       } p-2 rounded-lg mt-2`}
                     >
                       <div className="flex justify-between items-center">

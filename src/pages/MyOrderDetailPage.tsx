@@ -4,12 +4,15 @@ import axios from "axios";
 import { formatRupiah } from "../utils/formatCurrency";
 import { useDarkMode } from "../context/DarkMode";
 import NavbarComponent from "../components/Navbar";
+import { getPlanName } from "../utils/getPlanName";
+import usePlans from "../context/PlanContext";
 
 // Interface yang disesuaikan dengan respons API
 interface OrderProduct {
   id: number;
   name: string;
   price: number; // Sesuai dengan yang dikembalikan API
+  bv: number;
   quantity: number;
   picture: string;
   variant: string;
@@ -22,6 +25,9 @@ type OrderDetail = {
   receiver_phone: string;
   receiver_address: string;
   gross_amount: number;
+  id_plan: number;
+  bv_period_id: number;
+  bv_period_name: string;
   shipping_cost: number;
   shipping_method: string;
   shipment_status: string;
@@ -38,6 +44,7 @@ export default function MyOrderDetailPage() {
   const [data, setData] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { plans } = usePlans();
 
   useEffect(() => {
     if (order_id) {
@@ -56,7 +63,20 @@ export default function MyOrderDetailPage() {
     }
   }, [order_id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div
+        className={`${
+          isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
+      >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
+        <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
+          Memuat data...
+        </p>
+      </div>
+    );
+  }
   if (error) return <p className="text-red-500">{error}</p>;
   if (!data) return <p>Tidak ada data ditemukan</p>;
 
@@ -103,7 +123,9 @@ export default function MyOrderDetailPage() {
         >
           <div
             className={`${
-              isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+              isDarkMode
+                ? "bg-[#252525]"
+                : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
             } flex p-2 rounded-lg flex-col`}
           >
             <h3 className="font-bold text-base">
@@ -120,7 +142,9 @@ export default function MyOrderDetailPage() {
 
           <div
             className={`${
-              isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+              isDarkMode
+                ? "bg-[#252525]"
+                : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
             } flex p-2 rounded-lg flex-col mt-4`}
           >
             <h3 className="font-bold text-base">
@@ -175,7 +199,9 @@ export default function MyOrderDetailPage() {
               <li key={product.id} className="py-2">
                 <div
                   className={`${
-                    isDarkMode ? "bg-[#252525]" : "bg-[#f4f6f9]"
+                    isDarkMode
+                      ? "bg-[#252525]"
+                      : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                   } flex p-2 rounded-lg`}
                 >
                   <img
@@ -212,29 +238,58 @@ export default function MyOrderDetailPage() {
               </li>
             ))}
           </ul>
-          <hr className="mt-4 border-t border-gray-300" />
-          <div className="mt-4 space-y-1 text-right text-sm">
-            <div className="flex justify-between">
-              <span>Subtotal Produk:</span>
-              <span className="font-medium">
-                {formatRupiah(subtotalProduk)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Subtotal Pengiriman:</span>
-              <span className="font-medium">
-                {formatRupiah(data.shipping_cost)}
-              </span>
-            </div>
-            <div className="flex justify-between text-green-600">
-              <span>Voucher produk:</span>
-              <span>
-                -{formatRupiah(nominalDiskon)} ({data.discount}%)
-              </span>
+          <div
+            className={`${
+              isDarkMode
+                ? "bg-[#252525]"
+                : "bg-[#f4f6f9] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+            } mt-2 p-3 rounded-lg`}
+          >
+            <div className="text-right text-sm">
+              <div className="flex justify-between">
+                <span>BV Plan:</span>
+                <span className="font-medium">
+                  {getPlanName(data.id_plan, plans)}
+                </span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <span>BV Period:</span>
+                <span className="font-medium">{data.bv_period_name}</span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <span>BV Didapat:</span>
+                <span className="font-medium">
+                  {data.products.reduce(
+                    (total, product) =>
+                      total + (product.bv ?? 0) * product.quantity,
+                    0
+                  )}{" "}
+                  BV
+                </span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <span>Subtotal Produk:</span>
+                <span className="font-medium">
+                  {formatRupiah(subtotalProduk)}
+                </span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <span>Subtotal Pengiriman:</span>
+                <span className="font-medium">
+                  {formatRupiah(data.shipping_cost)}
+                </span>
+              </div>
+              <div className="flex justify-between text-green-600 mt-1">
+                <span>Voucher produk:</span>
+                <span>
+                  -{formatRupiah(nominalDiskon)} ({data.discount}%)
+                </span>
+              </div>
             </div>
           </div>
+          <hr className="mt-4 border-t border-gray-300" />
           <div className="mt-4 pt-2 font-bold text-right">
-            Total: {formatRupiah(data.gross_amount)}
+            Total Pesanan: {formatRupiah(data.gross_amount)}
           </div>
         </div>
       </div>

@@ -264,10 +264,11 @@ const ProductDetailPage = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
-        } flex justify-center items-center min-h-screen`}
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
       >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
         <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
-          Memuat produk...
+          Memuat data...
         </p>
       </div>
     );
@@ -614,7 +615,7 @@ const ProductDetailPage = () => {
                     className={`${
                       isDarkMode
                         ? "bg-[#404040] text-[#f0f0f0]"
-                        : "bg-[#f4f6f9] text-[#353535]"
+                        : "bg-[#f4f6f9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                     } p-3 rounded-lg flex mt-4`}
                   >
                     <img

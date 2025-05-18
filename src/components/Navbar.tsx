@@ -81,14 +81,20 @@ const NavbarComponent = () => {
           {/* Cart Button */}
           <Link
             to="/cart"
-            className={`${
+            className={`relative ${
               isDarkMode
                 ? "text-[#f0f0f0] bg-[#303030]"
                 : "text-[#353535] bg-[#f0f0f0]"
             } flex items-center justify-center cursor-pointer py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm text-center`}
           >
-            <i className="bx bxs-cart-add text-xl"></i>
-            {isLoggedIn && totalItems > 0 && `(${totalItems})`}
+            <i className="bx bxs-cart-add text-xl relative"></i>
+
+            {/* Badge notif */}
+            {isLoggedIn && totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                {totalItems}
+              </span>
+            )}
           </Link>
 
           {/* Profile Button */}
@@ -193,14 +199,20 @@ const NavbarComponent = () => {
             <li>
               <Link
                 to="/cart"
-                className={`${
+                className={`relative ${
                   isDarkMode
                     ? "text-[#f0f0f0] bg-[#303030]"
                     : "text-[#353535] bg-[#f0f0f0]"
-                } hidden cursor-pointer md:block py-2 px-3 hover:text-white w-full md:w-auto hover:bg-[#28a154] rounded-sm text-center`}
+                } flex items-center justify-center cursor-pointer py-2 px-3 hover:text-white hover:bg-[#28a154] rounded-sm text-center`}
               >
-                <i className="bx bxs-cart-add"></i>
-                {isLoggedIn && totalItems > 0 && `(${totalItems})`}
+                <i className="bx bxs-cart-add text-xl relative"></i>
+
+                {/* Badge notif */}
+                {isLoggedIn && totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                    {totalItems}
+                  </span>
+                )}
               </Link>
             </li>
 

@@ -85,7 +85,11 @@ const BestSellers = () => {
               setSearchParams(searchParams);
             }}
             value={sort || ""}
-            className="border p-2 rounded"
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
+                : "bg-[#F4F6F9] text-[#353535] border-gray-200"
+            } p-2 rounded-lg text-center font-semibold border border-green-500 text-green-600 focus:ring-green-500 focus:border-green-500 transition cursor-pointer`}
           >
             <option value="">Urutkan Harga</option>
             <option value="termurah">Termurah ke Termahal</option>
@@ -99,7 +103,11 @@ const BestSellers = () => {
               setSearchParams(searchParams);
             }}
             value={minRating || ""}
-            className="border p-2 rounded"
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0] border-[#282828]"
+                : "bg-[#F4F6F9] text-[#353535] border-gray-200"
+            } p-2 rounded-lg text-center font-semibold border border-green-500 text-green-600 focus:ring-green-500 focus:border-green-500 transition cursor-pointer`}
           >
             <option value="0">Semua Rating</option>
             <option value="1">⭐1</option>
