@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useDarkMode } from "../context/DarkMode";
 
 type BVRuleModalProps = {
@@ -7,15 +8,30 @@ type BVRuleModalProps = {
 
 const BVRuleModal: React.FC<BVRuleModalProps> = ({ show, onClose }) => {
   const { isDarkMode } = useDarkMode();
-  if (!show) return null;
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (show) {
+      setVisible(true);
+    } else {
+      // Delay unmounting for smooth close
+      setTimeout(() => setVisible(false), 200);
+    }
+  }, [show]);
+
+  if (!show && !visible) return null;
 
   return (
     <div
-      className="fixed inset-0 backdrop-blur-xs bg-[#000000b5] flex items-center justify-center z-50 p-4 w-full"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-[#000000b5] backdrop-blur-sm p-4 w-full transition-opacity duration-300 ${
+        show ? "opacity-100" : "opacity-0"
+      }`}
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 rounded-lg max-w-3xl w-full overflow-y-auto max-h-[90vh]"
+        className={`bg-white p-6 rounded-lg max-w-3xl w-full overflow-y-auto max-h-[90vh] transform transition-transform duration-300 ${
+          show ? "scale-100" : "scale-95"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <h1
@@ -76,8 +92,8 @@ const BVRuleModal: React.FC<BVRuleModalProps> = ({ show, onClose }) => {
             <tr>
               <td className="border p-2 text-center">6</td>
               <td className="border p-2">
-                Total BV &gt; 200 &amp; BV Plan B &gt; BV Plan A &amp;
-                BV Plan B &lt; 200 &amp; BV Plan A &lt; 200
+                Total BV &gt; 200 &amp; BV Plan B &gt; BV Plan A &amp; BV Plan B
+                &lt; 200 &amp; BV Plan A &lt; 200
               </td>
               <td className="border p-2">
                 Max BV Plan B = 200, sisa ke BV Plan A

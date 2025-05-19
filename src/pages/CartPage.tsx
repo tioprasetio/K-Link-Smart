@@ -184,7 +184,7 @@ const CartPage = () => {
                 type="checkbox"
                 checked={selectedItems.includes(item.id)}
                 onChange={() => toggleSelect(item.id)}
-                className="mr-3"
+                className="mr-3 cursor-pointer"
               />
               <a className="inline-block" href="#">
                 <img

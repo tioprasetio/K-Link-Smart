@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
 import NavbarComponent from "../components/Navbar";
 import usePlans from "../context/PlanContext";
+import Swal from "sweetalert2";
 
 const EditProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -101,8 +102,7 @@ const EditProfile = () => {
       }
 
       await updateProfile(data); // Sesuaikan agar fungsi ini menerima FormData
-
-      alert("Profile updated successfully!");
+      Swal.fire("Success", "Profile updated successfully!", "success");
     } catch (error) {
       console.error("🔥 Error updating profile:", error);
       setError("Gagal menyimpan perubahan.");

@@ -594,7 +594,7 @@ const ProductDetailPage = () => {
                               selectedVariant?.id === variant.id
                                 ? "bg-[#28A154] text-white shadow-lg"
                                 : "bg-[#F4F6F9] text-[#454545]"
-                            } hover:bg-[#167e3c] hover:text-white`}
+                            } hover:bg-[#167e3c] hover:text-white hover:scale-105 transition-all`}
                           >
                             {variant.variant_name}
                           </button>

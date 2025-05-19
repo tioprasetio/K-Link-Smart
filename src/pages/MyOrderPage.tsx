@@ -50,6 +50,13 @@ const MyOrderPage = () => {
     }[]
   >([]);
 
+  const dikemasCount = orders.filter(
+    (order) => order.shipment_status === "dikemas"
+  ).length;
+  const dikirimCount = orders.filter(
+    (order) => order.shipment_status === "dikirim"
+  ).length;
+
   const filteredOrders = orders
     .filter((order) =>
       filterStatus ? order.shipment_status === filterStatus : true
@@ -250,32 +257,49 @@ const MyOrderPage = () => {
           ></i>
           <h1 className="text-2xl font-bold">Pesanan Saya</h1>
         </div>
-        <div className="flex flex-wrap text-sm md:text-lg gap-2 mb-4">
-          {["dikemas", "dikirim", "selesai", null].map((status) => (
-            <button
-              key={status ?? "semua"}
-              onClick={() => {
-                const newParams = new URLSearchParams(searchParams);
-                if (status) {
-                  newParams.set("filter", status);
-                } else {
-                  newParams.delete("filter");
-                }
-                setSearchParams(newParams);
-              }}
-              className={`px-3 py-1 rounded cursor-pointer ${
-                filterStatus === status || (!filterStatus && !status)
-                  ? "bg-green-500 text-white"
-                  : isDarkMode
-                  ? "bg-[#404040] text-white"
-                  : "bg-gray-200 text-black"
-              }`}
-            >
-              {status
-                ? status.charAt(0).toUpperCase() + status.slice(1)
-                : "Semua"}
-            </button>
-          ))}
+        <div className="flex flex-wrap text-sm md:text-lg gap-4 mb-4">
+          {["dikemas", "dikirim", "selesai", null].map((status) => {
+            const label = status ?? "semua";
+            const badgeCount =
+              status === "dikemas"
+                ? dikemasCount
+                : status === "dikirim"
+                ? dikirimCount
+                : 0;
+
+            return (
+              <div key={label} className="relative">
+                <button
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    if (status) {
+                      newParams.set("filter", status);
+                    } else {
+                      newParams.delete("filter");
+                    }
+                    setSearchParams(newParams);
+                  }}
+                  className={`hover:scale-105 transition-all px-3 py-1 rounded cursor-pointer ${
+                    filterStatus === status || (!filterStatus && !status)
+                      ? "bg-green-500 text-white"
+                      : isDarkMode
+                      ? "bg-[#404040] text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                >
+                  {label.charAt(0).toUpperCase() + label.slice(1)}
+                </button>
+
+                {/* Badge notif */}
+                {badgeCount > 0 &&
+                  (status === "dikemas" || status === "dikirim") && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                      {badgeCount}
+                    </span>
+                  )}
+              </div>
+            );
+          })}
         </div>
         <input
           type="text"

@@ -10,6 +10,30 @@ interface TransactionProduct {
   item_bv: number;
 }
 
+interface BvSummary {
+  user_id: string;
+  bv_period_id: string;
+  total_bv: number;
+  plan_a: number;
+  plan_b: number;
+  total_downline_bv: number; // Added field for downline BV
+  grand_total_bv: number; // Added field for combined total
+}
+
+interface DownlineBvDetail {
+  from_user_id: string;
+  downline_name: string;
+  downline_email: string;
+  total_bv: number;
+}
+
+interface DownlineBvSummary {
+  period_id: number;
+  period_name: string;
+  downlines: DownlineBvDetail[];
+  total_downline_bv: number;
+}
+
 interface Transaction {
   id: number;
   order_id: string;
@@ -74,6 +98,13 @@ const BVReport = () => {
   const [bvSummaryError, setBvSummaryError] = useState<string | null>(null);
   const [bvLoading, setBvLoading] = useState<boolean>(false);
   const [showRuleModal, setShowRuleModal] = useState(false);
+
+  // New state for downline BV data
+  const [downlineBvSummary, setDownlineBvSummary] =
+    useState<DownlineBvSummary | null>(null);
+  const [downlineBvLoading, setDownlineBvLoading] = useState<boolean>(false);
+  const [showDownlineDetails, setShowDownlineDetails] =
+    useState<boolean>(false);
 
   const token = localStorage.getItem("token");
   const { isDarkMode } = useDarkMode();
@@ -188,6 +219,32 @@ const BVReport = () => {
     fetchReport();
   }, [selectedPeriod, token]);
 
+  useEffect(() => {
+    if (!selectedPeriod) return;
+
+    const fetchDownlineBvSummary = async () => {
+      setDownlineBvLoading(true);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_APP_API_URL}/api/downline-bv-summary`,
+          {
+            params: { period_id: selectedPeriod },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setDownlineBvSummary(res.data.data);
+      } catch (error) {
+        console.error("Failed to load downline BV summary", error);
+      } finally {
+        setDownlineBvLoading(false);
+      }
+    };
+
+    fetchDownlineBvSummary();
+  }, [selectedPeriod, token]);
+
   const formatDate = (date: string | Date) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
     return dateObj.toLocaleDateString("id-ID", {
@@ -255,6 +312,10 @@ const BVReport = () => {
 
     fetchBvSummary();
   }, [selectedPeriod, token]);
+
+  const toggleDownlineDetails = () => {
+    setShowDownlineDetails(!showDownlineDetails);
+  };
 
   return (
     <>
@@ -505,6 +566,101 @@ const BVReport = () => {
                         </p>
                       </div>
                     </div>
+                    {downlineBvLoading ? (
+                      <div className="text-center py-4">
+                        <p className="text-gray-500 text-sm">
+                          Memuat data BV dari downline...
+                        </p>
+                      </div>
+                    ) : (
+                      downlineBvSummary && (
+                        <>
+                          <div
+                            className={`${
+                              isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
+                            } p-3 rounded-lg flex justify-between items-center`}
+                          >
+                            <div className="flex items-center">
+                              <p className="font-medium">BV dari Downline</p>
+                              <button
+                                onClick={toggleDownlineDetails}
+                                className="ml-2 text-sm text-[#28a154]"
+                              >
+                                <i
+                                  className={`bx ${
+                                    showDownlineDetails
+                                      ? "bx-chevron-up"
+                                      : "bx-chevron-down"
+                                  }`}
+                                ></i>
+                              </button>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-[#28a154]">
+                                {downlineBvSummary.total_downline_bv} BV
+                              </p>
+                            </div>
+                          </div>
+
+                          {showDownlineDetails && (
+                            <div className="mt-2 pl-4">
+                              {downlineBvSummary.downlines.length > 0 ? (
+                                <div className="max-h-60 overflow-y-auto pr-2 space-y-2">
+                                  {downlineBvSummary.downlines.map(
+                                    (downline, index) => (
+                                      <div
+                                        key={index}
+                                        className={`${
+                                          isDarkMode
+                                            ? "bg-[#323232]"
+                                            : "bg-[#eaeef3]"
+                                        } p-3 rounded-lg flex justify-between items-center`}
+                                      >
+                                        <div>
+                                          <p className="font-medium">
+                                            {downline.downline_name}
+                                          </p>
+                                          <p className="text-xs text-gray-500">
+                                            {downline.downline_email}
+                                          </p>
+                                        </div>
+                                        <div className="text-right">
+                                          <p className="font-bold text-[#28a154]">
+                                            {downline.total_bv} BV
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-gray-500">
+                                  Tidak ada data BV dari downline
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          <div
+                            className={`${
+                              isDarkMode ? "bg-[#323232]" : "bg-[#dae5f0]"
+                            } p-3 rounded-lg flex justify-between items-center`}
+                          >
+                            <div>
+                              <p className="font-medium">
+                                Grand Total BV (Personal + Downline)
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-[#28a154] text-lg">
+                                {bvSummary.total_bv +
+                                  downlineBvSummary.total_downline_bv}{" "}
+                                BV
+                              </p>
+                            </div>
+                          </div>
+                        </>
+                      )
+                    )}
                   </div>
                 ) : null}
               </div>

@@ -199,7 +199,7 @@ const NavbarComponent = () => {
             <li>
               <Link
                 to="/cart"
-                className={`relative ${
+                className={`relative hidden md:block ${
                   isDarkMode
                     ? "text-[#f0f0f0] bg-[#303030]"
                     : "text-[#353535] bg-[#f0f0f0]"

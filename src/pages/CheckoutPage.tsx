@@ -799,7 +799,7 @@ const CheckoutPage = () => {
           <label className="block mb-2">Ekspedisi</label>
           {isLoadingMethods ? (
             <div className="flex items-center justify-center p-4">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+              <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
               <span className="ml-2">Loading ekspedisi...</span>
             </div>
           ) : methodsError ? (
@@ -840,7 +840,10 @@ const CheckoutPage = () => {
 
         {/* Shipping Options */}
         {isLoadingShipping && (
-          <p className="text-center py-4">Loading Ekspedisi...</p>
+          <div className="flex items-center justify-center p-4">
+            <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
+            <span className="ml-2">Loading ekspedisi...</span>
+          </div>
         )}
         {!isLoadingShipping && selectedMethod && shippingOptions.length > 0 && (
           <div>
