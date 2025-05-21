@@ -484,7 +484,11 @@ const BVReport = () => {
                 </div>
 
                 {/* Alokasi BV Plan dari endpoint bv-summary */}
-                <hr className="mt-4 mb-4 border-t border-gray-300" />
+                <hr
+                  className={`${
+                    isDarkMode ? "border-gray-500" : "border-gray-300"
+                  } mt-4 mb-4 border-t`}
+                />
                 <div className="flex flex-row items-center mb-3">
                   <h3
                     className={`${
@@ -522,39 +526,47 @@ const BVReport = () => {
                   </div>
                 ) : bvSummary ? (
                   <div className="space-y-3">
-                    <div
-                      className={`${
-                        isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
-                      } p-3 rounded-lg flex justify-between items-center`}
-                    >
-                      <div>
-                        <p className="font-medium">Plan A</p>
+                    <div className="flex flex-row gap-4">
+                      <div
+                        className={`${
+                          isDarkMode
+                            ? "bg-[#252525] text-[#f0f0f0]"
+                            : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                        } p-3 rounded-lg w-full flex justify-between items-center`}
+                      >
+                        <div>
+                          <p className="font-medium">Plan A</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-[#28a154]">
+                            {bvSummary.plan_a} BV
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-[#28a154]">
-                          {bvSummary.plan_a} BV
-                        </p>
+
+                      <div
+                        className={`${
+                          isDarkMode
+                            ? "bg-[#252525] text-[#f0f0f0]"
+                            : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                        } p-3 rounded-lg w-full flex justify-between items-center`}
+                      >
+                        <div>
+                          <p className="font-medium">Plan B</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-[#28a154]">
+                            {bvSummary.plan_b} BV
+                          </p>
+                        </div>
                       </div>
                     </div>
 
                     <div
                       className={`${
-                        isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
-                      } p-3 rounded-lg flex justify-between items-center`}
-                    >
-                      <div>
-                        <p className="font-medium">Plan B</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-[#28a154]">
-                          {bvSummary.plan_b} BV
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`${
-                        isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
+                        isDarkMode
+                          ? "bg-[#252525] text-[#f0f0f0]"
+                          : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                       } p-3 rounded-lg flex justify-between items-center`}
                     >
                       <div>
@@ -577,7 +589,9 @@ const BVReport = () => {
                         <>
                           <div
                             className={`${
-                              isDarkMode ? "bg-[#252525]" : "bg-[#F4F6F9]"
+                              isDarkMode
+                                ? "bg-[#252525] text-[#f0f0f0]"
+                                : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                             } p-3 rounded-lg flex justify-between items-center`}
                           >
                             <div className="flex items-center">
@@ -591,7 +605,7 @@ const BVReport = () => {
                                     showDownlineDetails
                                       ? "bx-chevron-up"
                                       : "bx-chevron-down"
-                                  }`}
+                                  } text-xl`}
                                 ></i>
                               </button>
                             </div>
@@ -603,17 +617,17 @@ const BVReport = () => {
                           </div>
 
                           {showDownlineDetails && (
-                            <div className="mt-2 pl-4">
+                            <div className="mt-2">
                               {downlineBvSummary.downlines.length > 0 ? (
-                                <div className="max-h-60 overflow-y-auto pr-2 space-y-2">
+                                <div className="max-h-60 overflow-y-auto pl-4 pr-4 space-y-2">
                                   {downlineBvSummary.downlines.map(
                                     (downline, index) => (
                                       <div
                                         key={index}
                                         className={`${
                                           isDarkMode
-                                            ? "bg-[#323232]"
-                                            : "bg-[#eaeef3]"
+                                            ? "bg-[#252525] text-[#f0f0f0]"
+                                            : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                                         } p-3 rounded-lg flex justify-between items-center`}
                                       >
                                         <div>
@@ -640,18 +654,14 @@ const BVReport = () => {
                               )}
                             </div>
                           )}
-                          <div
-                            className={`${
-                              isDarkMode ? "bg-[#323232]" : "bg-[#dae5f0]"
-                            } p-3 rounded-lg flex justify-between items-center`}
-                          >
+                          <div className="p-3 bg-[#28a154] text-[#FFFFFF] rounded-lg flex justify-between items-center">
                             <div>
                               <p className="font-medium">
                                 Grand Total BV (Personal + Downline)
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="font-bold text-[#28a154] text-lg">
+                              <p className="font-bold text-[#FFFFFF] text-lg">
                                 {bvSummary.total_bv +
                                   downlineBvSummary.total_downline_bv}{" "}
                                 BV
@@ -693,7 +703,7 @@ const BVReport = () => {
                 }}
                 className={`${
                   isDarkMode
-                    ? "bg-[#303030] text-white border-gray-700 placeholder-gray-300"
+                    ? "bg-[#303030] text-[#FFFFFF] border-gray-700 placeholder-gray-300"
                     : "bg-[#f4f6f9] text-[#353535] border-gray-300 placeholder-gray-400 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                 } mb-4 px-4 py-2 border rounded-lg w-full focus:ring-[#28a154] focus:border-[#28a154]`}
               />

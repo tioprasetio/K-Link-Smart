@@ -18,6 +18,8 @@ interface User {
   no_hp?: string;
   BV?: number;
   alamat?: string;
+  bank?: string;
+  rekening_bank?: string;
   jenis_kelamin?: string;
   tanggal_lahir?: string;
   leader_id?: string;

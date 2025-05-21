@@ -45,12 +45,20 @@ export default function MyOrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { plans } = usePlans();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (order_id) {
       setLoading(true);
       axios
-        .get(`${import.meta.env.VITE_APP_API_URL}/api/transactions/${order_id}`)
+        .get(
+          `${import.meta.env.VITE_APP_API_URL}/api/transactions/${order_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
         .then((res) => {
           setData(res.data.data);
           setLoading(false);
@@ -61,7 +69,7 @@ export default function MyOrderDetailPage() {
           setLoading(false);
         });
     }
-  }, [order_id]);
+  }, [order_id, token]);
 
   if (loading) {
     return (
@@ -77,7 +85,26 @@ export default function MyOrderDetailPage() {
       </div>
     );
   }
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (error)
+    return (
+      <div
+        className={`flex flex-col items-center justify-center min-h-screen ${
+          isDarkMode ? "bg-[#140C00] text-white" : "bg-[#f4f6f9] text-[#353535]"
+        } p-6`}
+      >
+        <h2 className="text-2xl font-bold mb-2">Oops! Ada masalah</h2>
+        <p className="mb-4 text-center max-w-sm">
+          {error}
+        </p>
+        <button
+          onClick={() => navigate("/my-order")}
+          className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg shadow-md"
+        >
+          Coba Lagi
+        </button>
+      </div>
+    );
+
   if (!data) return <p>Tidak ada data ditemukan</p>;
 
   const subtotalProduk = data.products.reduce(

@@ -10,7 +10,8 @@ const PaymentCallbackPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { clearCheckedOutItems } = useCart();
-  const { selectedProducts, setSelectedProducts } = useCheckout();
+  const { selectedProducts, setSelectedProducts, checkoutToken } =
+    useCheckout();
   const [status, setStatus] = useState<"success" | "failed" | "pending">(
     "pending"
   );
@@ -61,17 +62,30 @@ const PaymentCallbackPage = () => {
     }
   };
 
-  const handleSelesai = () => {
-    localStorage.removeItem("order_id");
+  const handleSelesai = async () => {
+    try {
+      // Hapus dari backend (temporary_checkouts)
+      if (checkoutToken) {
+        await axios.delete(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/checkout-temp/${checkoutToken}`
+        );
+      }
+      localStorage.removeItem("order_id");
 
-    clearCheckedOutItems(selectedProducts);
+      clearCheckedOutItems(selectedProducts);
 
-    // Hapus checkout dari local storage dan state
-    localStorage.removeItem("selectedProducts");
-    setSelectedProducts([]);
+      // Hapus checkout dari local storage dan state
+      localStorage.removeItem("selectedProducts");
+      setSelectedProducts([]);
 
-    // Redirect ke halaman utama
-    window.location.href = "/";
+      // Redirect ke halaman utama
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Gagal menyelesaikan checkout:", error);
+      alert("Terjadi kesalahan saat menyelesaikan transaksi.");
+    }
   };
 
   return (

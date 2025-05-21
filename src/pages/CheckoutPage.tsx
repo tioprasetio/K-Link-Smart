@@ -18,7 +18,13 @@ import usePlans from "../context/PlanContext";
 
 const CheckoutPage = () => {
   // Context hooks
-  const { selectedProducts, setSelectedProducts } = useCheckout();
+  const {
+    selectedProducts,
+    setSelectedProducts,
+    isLoading,
+    cancelCheckout,
+    checkoutToken,
+  } = useCheckout();
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
   const { user, loading } = useAuth();
@@ -105,7 +111,7 @@ const CheckoutPage = () => {
     if (!loading && !user) {
       navigate("/login");
     }
-    if (selectedProducts.length === 0) {
+    if (!isLoading && selectedProducts.length === 0) {
       navigate("/cart");
     }
   }, [user, loading, navigate, selectedProducts]);
@@ -343,8 +349,8 @@ const CheckoutPage = () => {
   };
 
   // Cancel checkout
-  const handleCancelCheckout = () => {
-    Swal.fire({
+  const handleCancelCheckout = async () => {
+    const result = await Swal.fire({
       title: "Batalkan Checkout?",
       text: "Apakah Anda yakin ingin membatalkan checkout?",
       icon: "warning",
@@ -353,14 +359,18 @@ const CheckoutPage = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Ya, Batalkan",
       cancelButtonText: "Tidak",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        localStorage.removeItem("selectedProducts");
-        setSelectedProducts([]);
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await cancelCheckout();
         Swal.fire("Dibatalkan!", "Checkout telah dibatalkan.", "success");
         navigate("/cart");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        Swal.fire("Error", "Gagal membatalkan checkout.", err);
       }
-    });
+    }
   };
 
   // Payment processing
@@ -428,13 +438,26 @@ const CheckoutPage = () => {
           title: "Pesanan COD Berhasil!",
           text: "Pesanan Anda telah tercatat. Silahkan tunggu barang dikirim.",
           icon: "success",
-        }).then(() => {
-          clearCheckedOutItems(selectedProducts);
+        }).then(async () => {
+          try {
+            // Hapus data temporary checkout dari backend
+            if (checkoutToken) {
+              await axios.delete(
+                `${
+                  import.meta.env.VITE_APP_API_URL
+                }/api/checkout-temp/${checkoutToken}`
+              );
+            }
+            clearCheckedOutItems(selectedProducts);
 
-          // Hapus checkout dari local storage dan state
-          localStorage.removeItem("selectedProducts");
-          setSelectedProducts([]);
-          navigate("/my-order"); // Redirect ke halaman pesanan
+            // Hapus checkout dari local storage dan state
+            localStorage.removeItem("selectedProducts");
+            setSelectedProducts([]);
+            navigate("/my-order"); // Redirect ke halaman pesanan
+          } catch (error) {
+            console.error("Gagal hapus data checkout COD:", error);
+            Swal.fire("Error", "Gagal memproses pesanan COD.", "error");
+          }
         });
       } else {
         // Redirect ke Midtrans untuk pembayaran online
@@ -515,7 +538,7 @@ const CheckoutPage = () => {
                 setReceiverAddress(user?.alamat || "");
               }
             }}
-            className="mr-2 cursor-pointer"
+            className="mr-2 text-green-600 accent-green-600 rounded cursor-pointer"
           />
           <label htmlFor="differentReceiver">
             *Gunakan data penerima berbeda
@@ -605,7 +628,7 @@ const CheckoutPage = () => {
           />
           <button
             onClick={handleApplyVoucher}
-            className="bg-green-500 text-white p-2 rounded cursor-pointer"
+            className="bg-[#28A154] text-white p-2 rounded cursor-pointer"
           >
             Gunakan
           </button>

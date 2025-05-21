@@ -19,6 +19,8 @@ const EditProfile = () => {
     plan: 1,
     no_hp: "",
     alamat: "",
+    bank: "",
+    rekening_bank: "",
     jenis_kelamin: "",
     tanggal_lahir: "",
   });
@@ -42,6 +44,8 @@ const EditProfile = () => {
         plan: user.id_plan || 1,
         no_hp: user.no_hp || "",
         alamat: user.alamat || "",
+        bank: user.bank || "",
+        rekening_bank: user.rekening_bank || "",
         jenis_kelamin: user.jenis_kelamin || "",
         tanggal_lahir: user.tanggal_lahir
           ? user.tanggal_lahir.split("T")[0] // Ambil hanya bagian "YYYY-MM-DD"
@@ -95,6 +99,8 @@ const EditProfile = () => {
       data.append("name", formData.name);
       data.append("no_hp", formData.no_hp);
       data.append("alamat", formData.alamat);
+      data.append("bank", formData.bank);
+      data.append("rekening_bank", formData.rekening_bank);
       data.append("jenis_kelamin", formData.jenis_kelamin);
       data.append("tanggal_lahir", formData.tanggal_lahir);
       if (profilePicture) {
@@ -299,6 +305,50 @@ const EditProfile = () => {
               <textarea
                 name="alamat"
                 value={formData.alamat}
+                onChange={handleChange}
+                required
+                className={`w-full p-4 border-none rounded-xl ${
+                  isDarkMode
+                    ? "bg-[#252525] text-[#f0f0f0]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                }`}
+              />
+            </div>
+
+            <div>
+              <label
+                className={`${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                } block mb-1`}
+              >
+                Bank
+              </label>
+              <input
+                type="text"
+                name="bank"
+                value={formData.bank}
+                onChange={handleChange}
+                required
+                className={`w-full p-4 border-none rounded-xl ${
+                  isDarkMode
+                    ? "bg-[#252525] text-[#f0f0f0]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                }`}
+              />
+            </div>
+
+            <div>
+              <label
+                className={`${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                } block mb-1`}
+              >
+                Rekening Bank
+              </label>
+              <input
+                type="text"
+                name="rekening_bank"
+                value={formData.rekening_bank}
                 onChange={handleChange}
                 required
                 className={`w-full p-4 border-none rounded-xl ${

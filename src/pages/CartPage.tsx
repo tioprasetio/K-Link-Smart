@@ -16,6 +16,8 @@ const CartPage = () => {
   const { setSelectedProducts } = useCheckout(); // Ambil function dari context
   const navigate = useNavigate(); // Untuk pindah ke halaman checkout
 
+  const [checkoutToken] = useState<string | null>(null);
+
   // Fungsi untuk toggle checkbox
   const toggleSelect = (id: number) => {
     setSelectedItems((prev) =>
@@ -103,6 +105,8 @@ const CartPage = () => {
       selectedItems.includes(item.id)
     );
 
+    console.log("Test Token:", checkoutToken);
+
     if (selectedItemsData.length === 0) {
       Swal.fire(
         "Oops!",
@@ -184,7 +188,7 @@ const CartPage = () => {
                 type="checkbox"
                 checked={selectedItems.includes(item.id)}
                 onChange={() => toggleSelect(item.id)}
-                className="mr-3 cursor-pointer"
+                className="mr-3 h-5 w-5 text-green-600 accent-green-600 rounded cursor-pointer"
               />
               <a className="inline-block" href="#">
                 <img
@@ -264,7 +268,7 @@ const CartPage = () => {
             <div className="flex items-center">
               <input
                 type="checkbox"
-                className="mr-2 w-5 h-5 cursor-pointer"
+                className="mr-2 h-5 w-5 text-green-600 accent-green-600 rounded cursor-pointer"
                 checked={
                   selectedItems.length === cart.length && cart.length > 0
                 }
