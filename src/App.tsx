@@ -36,6 +36,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import WishlistPage from "./pages/WishlistPage";
 import { ReviewProvider } from "./context/ReviewContext";
 import BVReport from "./pages/BvReportPage";
+import BonusPage from "./pages/BonusPage";
 
 function App() {
   // const location = useLocation(); // Mengambil lokasi saat ini di React Router
@@ -100,6 +101,7 @@ function App() {
                     <Route path="/history-bv" element={<HistoryBvPage />} />
                     <Route path="/downline" element={<DownlinePage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
+                    <Route path="/bonus" element={<BonusPage />} />
                     <Route
                       path="/bv-report"
                       element={<BVReport />}

@@ -29,7 +29,7 @@ const HomePage = () => {
     () => bestSellers.slice(0, 4),
     [bestSellers]
   );
-  
+
   const displayedProducts = useMemo(() => products.slice(0, 4), [products]);
 
   return (

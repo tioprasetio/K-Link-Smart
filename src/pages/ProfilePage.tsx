@@ -173,6 +173,10 @@ const ProfilePage = () => {
           </Link>
         </div>
 
+        <div className="space-y-4 mt-4">
+          <h3 className="text-base font-semibold text-[#656565]">Belanja</h3>
+        </div>
+
         <div
           className={`${
             isDarkMode
@@ -210,6 +214,25 @@ const ProfilePage = () => {
           </Link>
         </div>
 
+        <div className="space-y-4 mt-4">
+          <h3 className="text-base font-semibold text-[#656565]">Bonus BV</h3>
+        </div>
+
+        <div
+          className={`${
+            isDarkMode
+              ? "bg-[#404040] text-[#f0f0f0]"
+              : "bg-[#FFFFFF] text-[#353535]"
+          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
+        >
+          <div className="flex flex-col gap-2">
+            <span className="font-bold ">Bonus Period Saya</span>
+          </div>
+          <Link to="/bonus">
+            <i className="bx bx-right-arrow-alt text-2xl"></i>
+          </Link>
+        </div>
+
         <div
           className={`${
             isDarkMode
@@ -234,6 +257,12 @@ const ProfilePage = () => {
           <Link to="/bv-report">
             <i className="bx bx-right-arrow-alt text-2xl"></i>
           </Link>
+        </div>
+
+        <div className="space-y-4 mt-4">
+          <h3 className="text-base font-semibold text-[#656565]">
+            Jaringan Downline
+          </h3>
         </div>
 
         <div

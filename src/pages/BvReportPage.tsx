@@ -317,6 +317,21 @@ const BVReport = () => {
     setShowDownlineDetails(!showDownlineDetails);
   };
 
+  if (loading) {
+    return (
+      <div
+        className={`${
+          isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
+        } flex gap-2 justify-center items-center min-h-screen z-9999`}
+      >
+        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
+        <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
+          Memuat data...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <NavbarComponent />
@@ -367,12 +382,6 @@ const BVReport = () => {
             ))}
           </select>
         </div>
-
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        )}
 
         {report && (
           <div className="space-y-6">
@@ -594,12 +603,12 @@ const BVReport = () => {
                                 : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
                             } p-3 rounded-lg flex justify-between items-center`}
                           >
-                            <div className="flex items-center">
+                            <div
+                              className="flex items-center cursor-pointer"
+                              onClick={toggleDownlineDetails}
+                            >
                               <p className="font-medium">BV dari Downline</p>
-                              <button
-                                onClick={toggleDownlineDetails}
-                                className="ml-2 text-sm text-[#28a154]"
-                              >
+                              <button className="ml-2 text-sm text-[#28a154] cursor-pointer">
                                 <i
                                   className={`bx ${
                                     showDownlineDetails
