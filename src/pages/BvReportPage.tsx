@@ -345,7 +345,7 @@ const BVReport = () => {
         <div className="flex items-center gap-2 mb-4">
           <i
             className="bx bx-arrow-back text-xl md:text-2xl cursor-pointer"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/profile")}
           ></i>
           <h1 className="text-2xl font-bold">Laporan BV Transaksi Saya</h1>
         </div>

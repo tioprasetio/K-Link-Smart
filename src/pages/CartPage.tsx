@@ -150,7 +150,13 @@ const CartPage = () => {
             onClick={() => navigate(-1)} // Tambahkan fungsi kembali
           ></i>
           <h1 className="text-2xl font-bold">Keranjang Saya</h1>
-          {totalItems > 0 ? `(${totalItems})` : ""}
+          {totalItems > 0 ? (
+            <span className="bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+              {totalItems}
+            </span>
+          ) : (
+            ""
+          )}
         </div>
 
         {cart.length === 0 ? (

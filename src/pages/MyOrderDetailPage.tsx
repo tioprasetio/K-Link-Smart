@@ -6,6 +6,7 @@ import { useDarkMode } from "../context/DarkMode";
 import NavbarComponent from "../components/Navbar";
 import { getPlanName } from "../utils/getPlanName";
 import usePlans from "../context/PlanContext";
+import { formatDate } from "../utils/formatDate";
 
 // Interface yang disesuaikan dengan respons API
 interface OrderProduct {
@@ -32,6 +33,7 @@ type OrderDetail = {
   shipping_method: string;
   shipment_status: string;
   resi: string;
+  created_at: string;
   payment_method: string;
   discount: number;
   products: OrderProduct[];
@@ -203,6 +205,7 @@ export default function MyOrderDetailPage() {
               {data.status}
             </span>
           </p>
+          <p className="mb-2">{formatDate(data.created_at)}</p>
           <hr className="mt-4 border-t border-gray-300" />
 
           <div className="mt-4">

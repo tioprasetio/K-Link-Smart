@@ -30,7 +30,7 @@ const WishlistPage = () => {
         <div className="flex items-center gap-2 mb-4">
           <i
             className="bx bx-arrow-back text-xl md:text-2xl cursor-pointer"
-            onClick={() => navigate(-1)} // Tambahkan fungsi kembali
+            onClick={() => navigate("/profile")} // Tambahkan fungsi kembali
           ></i>
           <h1 className="text-2xl font-bold">
             Favorite Saya {totalItems > 0 ? `(${totalItems})` : ""}

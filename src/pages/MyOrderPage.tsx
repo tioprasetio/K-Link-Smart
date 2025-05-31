@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { useCheckout } from "../context/CheckoutContext";
 import { getPlanName } from "../utils/getPlanName";
 import usePlans from "../context/PlanContext";
+import { formatDate } from "../utils/formatDate";
 
 const MyOrderPage = () => {
   const { isDarkMode } = useDarkMode();
@@ -253,7 +254,7 @@ const MyOrderPage = () => {
         <div className="flex items-center gap-2 mb-4">
           <i
             className="bx bx-arrow-back text-xl md:text-2xl cursor-pointer"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/profile")}
           ></i>
           <h1 className="text-2xl font-bold">Pesanan Saya</h1>
         </div>
@@ -361,6 +362,7 @@ const MyOrderPage = () => {
                       {order.shipment_status}
                     </span>
                   </div>
+                  <p>{formatDate(order.created_at)}</p>
                   <ul className="mt-2 space-y-1">
                     {order.products.map((item) => (
                       <li key={item.id} className="py-1">

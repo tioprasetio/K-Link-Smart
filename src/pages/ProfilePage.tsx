@@ -182,12 +182,15 @@ const ProfilePage = () => {
             isDarkMode
               ? "bg-[#404040] text-[#f0f0f0]"
               : "bg-[#FFFFFF] text-[#353535]"
-          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
+          } relative p-4 rounded-lg flex items-center mb-4 mt-4 justify-between`}
         >
-          <div className="flex flex-col gap-2">
+          <div className="relative flex flex-col gap-2">
             <span className="font-bold ">Pesanan Saya</span>
             <span className="font-semibold text-[#959595]">
               {totalPesanan} Sedang Dikirim
+            </span>
+            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+              {totalPesanan}
             </span>
           </div>
           <Link to="/my-order">
@@ -200,13 +203,17 @@ const ProfilePage = () => {
             isDarkMode
               ? "bg-[#404040] text-[#f0f0f0]"
               : "bg-[#FFFFFF] text-[#353535]"
-          } p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
+          } relative p-4 rounded-lg flex items-center mb-4 mt-4 justify-between font-bold`}
         >
-          <div className="flex">
+          <div className="relative flex">
             <span>Favorite</span>
-            <span className="text-[#959595]">
-              {totalItems > 0 ? `(${totalItems})` : ""}
-            </span>
+            {totalItems > 0 ? (
+              <span className="absolute -top-1 -right-6 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                {totalItems}
+              </span>
+            ) : (
+              ""
+            )}
           </div>
 
           <Link to="/wishlist">

@@ -177,7 +177,7 @@ const BonusPage = () => {
         <div className="flex items-center gap-2 mb-4">
           <i
             className="bx bx-arrow-back text-xl md:text-2xl cursor-pointer"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/profile")}
           ></i>
           <h1 className="text-2xl font-bold">Bonus Saya</h1>
         </div>
@@ -275,25 +275,24 @@ const BonusPage = () => {
             } p-3 rounded-lg flex justify-between items-center`}
           >
             <h1 className="">Bukti</h1>
-            <p>
-              {selectedBonus?.proof_transfer ? (
-                <div
-                  className="text-blue-500 underline cursor-pointer"
-                  onClick={() => {
-                    setSelectedImage(
-                      `${import.meta.env.VITE_API_URL}/storage/${
-                        selectedBonus?.proof_transfer
-                      }`
-                    );
-                    setShowImageModal(true);
-                  }}
-                >
-                  Lihat
-                </div>
-              ) : (
-                "-"
-              )}
-            </p>
+
+            {selectedBonus?.proof_transfer ? (
+              <p
+                className="text-blue-500 underline cursor-pointer"
+                onClick={() => {
+                  setSelectedImage(
+                    `${import.meta.env.VITE_API_URL}/storage/${
+                      selectedBonus?.proof_transfer
+                    }`
+                  );
+                  setShowImageModal(true);
+                }}
+              >
+                Lihat
+              </p>
+            ) : (
+              <p>Belum ada bukti bayar</p>
+            )}
           </div>
         </div>
 
@@ -400,7 +399,7 @@ const BonusPage = () => {
               <img
                 src={selectedImage}
                 alt="Bukti Transfer"
-                className="w-full max-w-[90vw] max-h-[80vh] object-contain rounded-lg shadow-lg"
+                className="w-full max-w-[90vw] max-h-[80vh] object-contain rounded-lg"
                 onClick={(e) => e.stopPropagation()} // biar klik gambar tidak menutup
               />
             </div>
