@@ -17,6 +17,8 @@ const Register = () => {
     jenis_kelamin: "L", // Default "L" (Laki-laki)
     tanggal_lahir: "",
     leader_id: "",
+    bank: "",
+    rekening_bank: "",
   });
 
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -238,6 +240,39 @@ const Register = () => {
                 : "bg-[#f0f0f0] text-[#353535]"
             }`}
           />
+          <select
+            name="bank"
+            value={formData.bank}
+            onChange={handleChange}
+            required
+            className={`w-full p-4 border-none rounded-xl ${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0]"
+                : "bg-[#f0f0f0] text-[#353535]"
+            }`}
+          >
+            <option value="">Pilih Bank</option>
+            <option value="BCA">BCA</option>
+            <option value="BNI">BNI</option>
+            <option value="BRI">BRI</option>
+            <option value="Mandiri">Mandiri</option>
+            <option value="CIMB">CIMB</option>
+          </select>
+
+          <input
+            type="text"
+            name="rekening_bank"
+            placeholder="Nomor Rekening"
+            value={formData.rekening_bank}
+            onChange={handleChange}
+            required
+            className={`w-full p-4 border-none rounded-xl ${
+              isDarkMode
+                ? "bg-[#252525] text-[#f0f0f0]"
+                : "bg-[#f0f0f0] text-[#353535]"
+            }`}
+          />
+
           <input
             type="text"
             name="alamat"
