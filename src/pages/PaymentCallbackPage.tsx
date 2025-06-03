@@ -8,6 +8,7 @@ import { useCart } from "../context/CartContext";
 
 const PaymentCallbackPage = () => {
   const location = useLocation();
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const { clearCheckedOutItems } = useCart();
   const { selectedProducts, setSelectedProducts, checkoutToken } =
@@ -53,7 +54,12 @@ const PaymentCallbackPage = () => {
   const fetchTransactionDetails = async (orderId: string) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_URL}/api/transactions/${orderId}`
+        `${import.meta.env.VITE_APP_API_URL}/api/transactions/${orderId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setTransactionDetails(response.data.data); // Perhatikan responsenya, pastikan sesuai struktur
     } catch (error) {
