@@ -78,7 +78,7 @@ const Register = () => {
       navigate("/login"); // Redirect ke login setelah sukses register
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || "Terjadi kesalahan");
       console.log(err);
     }
   };
