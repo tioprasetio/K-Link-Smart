@@ -74,7 +74,7 @@ const BestSellers = () => {
 
         <div className="flex gap-4 px-6">
           {/* Filter berdasarkan Harga */}
-          <select
+          <select   
             onChange={(e) => {
               const value = e.target.value;
               if (value === "") {

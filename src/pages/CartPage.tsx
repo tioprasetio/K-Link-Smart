@@ -147,7 +147,7 @@ const CartPage = () => {
         <div className="flex items-center gap-2 mb-4">
           <i
             className="bx bx-arrow-back text-xl md:text-2xl cursor-pointer"
-            onClick={() => navigate(-1)} // Tambahkan fungsi kembali
+            onClick={() => navigate("/")}
           ></i>
           <h1 className="text-2xl font-bold">Keranjang Saya</h1>
           {totalItems > 0 ? (

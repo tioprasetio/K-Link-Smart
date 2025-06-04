@@ -602,6 +602,81 @@ const CheckoutPage = () => {
         )}
       </div>
 
+      {/* Metode Pengiriman */}
+      <div
+        className={`${
+          isDarkMode
+            ? "bg-[#404040] text-[#FFFFFF]"
+            : "bg-[#FFFFFF] text-[#353535]"
+        } p-4 rounded-lg shadow mb-6 mt-4`}
+      >
+        <h2 className="text-lg font-bold mb-4">Destinasi Pengiriman</h2>
+
+        <div className="mb-4">
+          <label className="block mb-2">Cari alamat</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="e.g. 'Bekasi, Jawa Barat'"
+              className={`${
+                isDarkMode
+                  ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300 border-gray-700"
+                  : "bg-[#F4F6F9] text-[#353535] placeholder-gray-400 border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+              } flex-1 p-2 border rounded-lg`}
+            />
+            <button
+              onClick={searchDestination}
+              className="bg-[#28A154] text-white px-4 py-2 rounded cursor-pointer"
+              disabled={isSearching}
+            >
+              {isSearching ? "Loading..." : "Cari"}
+            </button>
+          </div>
+        </div>
+
+        {/* Search Results */}
+        {destinationResults.length > 0 && (
+          <div className="max-h-40 overflow-y-auto mb-4">
+            {destinationResults.map((destination) => (
+              <div
+                key={destination.id}
+                className={`${
+                  isDarkMode
+                    ? "bg-[#353535] hover:bg-[#252525] text-[#FFFFFF]"
+                    : "bg-[#F4F6F9] hover:bg-[#e9eaec] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                } p-3 mb-2 rounded cursor-pointer`}
+                onClick={() => {
+                  setSelectedDestination(destination);
+                  setSearchQuery(destination.label);
+                  setDestinationResults([]);
+                }}
+              >
+                <p className="font-medium">{destination.label}</p>
+                <p className="text-sm text-gray-400">
+                  {destination.subdistrict_name}, {destination.city_name}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Selected Destination */}
+        {selectedDestination && (
+          <div
+            className={`${
+              isDarkMode
+                ? "bg-[#252525] text-[#FFFFFF]"
+                : "bg-[#FFFFFF] text-[#353535]"
+            } p-3 rounded`}
+          >
+            <p className="font-medium">Dipilih:</p>
+            <p>{selectedDestination.label}</p>
+          </div>
+        )}
+      </div>
+
       {/* Informasi Produk */}
       <ProductInformationCheckout />
 
@@ -731,81 +806,6 @@ const CheckoutPage = () => {
         >
           *Pilih Plan untuk memasukkan BV dari pembelian ini
         </p>
-      </div>
-
-      {/* Metode Pengiriman */}
-      <div
-        className={`${
-          isDarkMode
-            ? "bg-[#404040] text-[#FFFFFF]"
-            : "bg-[#FFFFFF] text-[#353535]"
-        } p-4 rounded-lg shadow mb-6 mt-4`}
-      >
-        <h2 className="text-lg font-bold mb-4">Destinasi Pengiriman</h2>
-
-        <div className="mb-4">
-          <label className="block mb-2">Cari alamat</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="e.g. 'Bekasi, Jawa Barat'"
-              className={`${
-                isDarkMode
-                  ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300 border-gray-700"
-                  : "bg-[#F4F6F9] text-[#353535] placeholder-gray-400 border-gray-300 shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
-              } flex-1 p-2 border rounded-lg`}
-            />
-            <button
-              onClick={searchDestination}
-              className="bg-[#28A154] text-white px-4 py-2 rounded cursor-pointer"
-              disabled={isSearching}
-            >
-              {isSearching ? "Loading..." : "Cari"}
-            </button>
-          </div>
-        </div>
-
-        {/* Search Results */}
-        {destinationResults.length > 0 && (
-          <div className="max-h-40 overflow-y-auto mb-4">
-            {destinationResults.map((destination) => (
-              <div
-                key={destination.id}
-                className={`${
-                  isDarkMode
-                    ? "bg-[#353535] hover:bg-[#252525] text-[#FFFFFF]"
-                    : "bg-[#F4F6F9] hover:bg-[#e9eaec] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
-                } p-3 mb-2 rounded cursor-pointer`}
-                onClick={() => {
-                  setSelectedDestination(destination);
-                  setSearchQuery(destination.label);
-                  setDestinationResults([]);
-                }}
-              >
-                <p className="font-medium">{destination.label}</p>
-                <p className="text-sm text-gray-400">
-                  {destination.subdistrict_name}, {destination.city_name}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Selected Destination */}
-        {selectedDestination && (
-          <div
-            className={`${
-              isDarkMode
-                ? "bg-[#252525] text-[#FFFFFF]"
-                : "bg-[#FFFFFF] text-[#353535]"
-            } p-3 rounded`}
-          >
-            <p className="font-medium">Dipilih:</p>
-            <p>{selectedDestination.label}</p>
-          </div>
-        )}
       </div>
 
       {/* Shipping Method */}
@@ -979,6 +979,10 @@ const CheckoutPage = () => {
         <div className="flex justify-between">
           <p className="font-medium">Total BV didapat</p>
           <p className="font-medium">{totalBV}</p>
+        </div>
+        <div className="flex justify-between">
+          <p className="font-medium">Total Berat</p>
+          <p className="font-medium">{totalWeight} Kg</p>
         </div>
         <div className="flex justify-between">
           <p className="font-medium">Subtotal untuk produk</p>

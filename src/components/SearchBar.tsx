@@ -71,7 +71,10 @@ const SearchBar = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
+      const transcript = event.results[0][0].transcript
+        .trim()
+        .replace(/[.,!?]$/, "");
+
       setQuery(transcript);
 
       // Tunggu 500ms lalu jalankan pencarian otomatis
