@@ -74,7 +74,7 @@ const BestSellers = () => {
 
         <div className="flex gap-4 px-6">
           {/* Filter berdasarkan Harga */}
-          <select   
+          <select
             onChange={(e) => {
               const value = e.target.value;
               if (value === "") {
@@ -125,13 +125,15 @@ const BestSellers = () => {
                 <p className="text-gray-500">Loading...</p>
               </div>
             ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <CardProduct
-                  key={product.id}
-                  {...product}
-                  isDarkMode={isDarkMode}
-                />
-              ))
+              filteredProducts
+                .slice(0, 10)
+                .map((product) => (
+                  <CardProduct
+                    key={product.id}
+                    {...product}
+                    isDarkMode={isDarkMode}
+                  />
+                ))
             ) : (
               <p className="text-center text-gray-500">
                 Produk tidak ditemukan.
