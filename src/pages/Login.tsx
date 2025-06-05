@@ -20,7 +20,7 @@ const Login = () => {
     try {
       const data = await login(email, password);
 
-      console.log("🟢 Login berhasil, token:", data.token); // Debugging
+      // console.log("🟢 Login berhasil, token:", data.token);
 
       setUser(data.user); // 🔥 Update user di global state
       setIsLoggedIn(true); // 🔥 Update status login di AuthContext

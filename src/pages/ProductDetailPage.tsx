@@ -198,8 +198,8 @@ const ProductDetailPage = () => {
         }).then(() => {
           navigate("/cart");
         });
-      } catch (error) {
-        console.log(error);
+      } catch {
+        // console.log(error);
         Swal.fire({
           title: "Oops...",
           text: "Gagal menambahkan produk ke keranjang.",

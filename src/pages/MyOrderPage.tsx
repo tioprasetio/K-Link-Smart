@@ -75,13 +75,13 @@ const MyOrderPage = () => {
   useEffect(() => {
     if (user) {
       setLoading(true);
-      console.log("User Data:", user);
+      // console.log("User Data:", user);
       axios
         .get(
           `${import.meta.env.VITE_APP_API_URL}/api/transactions/user/${user.id}`
         )
         .then((response) => {
-          console.log("Orders Response:", response.data); // Cek data API di console
+          // console.log("Orders Response:", response.data);
           setOrders(response.data.data);
           setLoading(false);
         })

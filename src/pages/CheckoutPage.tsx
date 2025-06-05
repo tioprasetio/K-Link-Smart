@@ -286,12 +286,12 @@ const CheckoutPage = () => {
     const fetchBvPeriods = async () => {
       setIsLoadingPeriods(true);
       try {
-        console.log("Fetching BV periods..."); // <-- Tambahkan ini
+        // console.log("Fetching BV periods...");
         const response = await axios.get(
           `${import.meta.env.VITE_APP_API_URL}/api/active-bv-periods`
         );
 
-        console.log("BV periods response:", response.data); // <-- Tambahkan ini
+        // console.log("BV periods response:", response.data);
 
         // Perbaikan disini:
         if (

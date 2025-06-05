@@ -36,7 +36,7 @@ const EditProfile = () => {
 
   // Perbarui formData setelah user tersedia
   useEffect(() => {
-    console.log("Tanggal lahir sebelum masuk ke state:", user?.tanggal_lahir);
+    // console.log("Tanggal lahir sebelum masuk ke state:", user?.tanggal_lahir);
     if (user) {
       setFormData({
         uid: user.uid || "",
@@ -55,7 +55,7 @@ const EditProfile = () => {
   }, [user]); // Hanya dijalankan ketika `user` berubah
 
   useEffect(() => {
-    console.log("Tanggal lahir di formData:", formData.tanggal_lahir);
+    // console.log("Tanggal lahir di formData:", formData.tanggal_lahir);
   }, [formData]);
 
   const handleChange = (

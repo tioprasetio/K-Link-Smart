@@ -41,7 +41,7 @@ const ProfilePage = () => {
 
   // Perbarui formData setelah user tersedia
   useEffect(() => {
-    console.log("Tanggal lahir sebelum masuk ke state:", user?.tanggal_lahir);
+    // console.log("Tanggal lahir sebelum masuk ke state:", user?.tanggal_lahir);
     if (user) {
       setFormData({
         uid: user.uid || "",
@@ -58,13 +58,13 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("User Data:", user);
+      // console.log("User Data:", user);
       axios
         .get(
           `${import.meta.env.VITE_APP_API_URL}/api/transactions/user/${user.id}`
         )
         .then((response) => {
-          console.log("Orders Response:", response.data); // Cek data API di console
+          // console.log("Orders Response:", response.data);
           setOrders(response.data.data);
         })
         .catch((error) => {

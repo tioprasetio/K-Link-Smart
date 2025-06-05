@@ -53,7 +53,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const isLoggedIn = checkIsLoggedIn();
 
     if (isLoggedIn && userEmail) {
-      console.log("Fetching cart for user:", userEmail);
+      // console.log("Fetching cart for user:", userEmail);
       fetchCart();
     }
   }, [userEmail]);

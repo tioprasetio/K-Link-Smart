@@ -16,7 +16,7 @@ const CartPage = () => {
   const { setSelectedProducts } = useCheckout(); // Ambil function dari context
   const navigate = useNavigate(); // Untuk pindah ke halaman checkout
 
-  const [checkoutToken] = useState<string | null>(null);
+  // const [checkoutToken] = useState<string | null>(null);
 
   // Fungsi untuk toggle checkbox
   const toggleSelect = (id: number) => {
@@ -105,7 +105,7 @@ const CartPage = () => {
       selectedItems.includes(item.id)
     );
 
-    console.log("Test Token:", checkoutToken);
+    // console.log("Test Token:", checkoutToken);
 
     if (selectedItemsData.length === 0) {
       Swal.fire(

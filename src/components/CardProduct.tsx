@@ -149,7 +149,7 @@ const CardProduct = (props: CardProductProps) => {
         <h3
           className={`${
             props.isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-          } text-lg text-left font-normal mt-2`}
+          } text-xs sm:text-sm md:text-lg text-left font-normal mt-2`}
         >
           {name}
         </h3>
@@ -160,7 +160,7 @@ const CardProduct = (props: CardProductProps) => {
               <span
                 className={`${
                   props.isDarkMode ? "text-[#f0f0f0]" : "text-[#28A154]"
-                } text-lg font-bold`}
+                } text-xs sm:text-sm md:text-lg font-bold`}
               >
                 {formatRupiah(harga)}
               </span>
@@ -168,24 +168,22 @@ const CardProduct = (props: CardProductProps) => {
             </div>
 
             {terjual ? (
-              <div className="flex flex-row items-center">
-                <span className="text-[#959595] text-sm">
-                  <i className="bx bxs-star text-sm text-[#FFD52DFF]"></i>{" "}
+              <div className="flex flex-row items-center text-xs sm:text-sm md:text-lg">
+                <span className="text-[#959595]">
+                  <i className="bx bxs-star text-[#FFD52DFF]"></i>{" "}
                   {displayRating}
                 </span>
-                <span className="text-[#959595] text-sm px-1">|</span>
-                <span className="text-[#959595] text-sm">
-                  Terjual {terjual}
-                </span>
+                <span className="text-[#959595] px-1">|</span>
+                <span className="text-[#959595]">Terjual {terjual}</span>
               </div>
             ) : (
-              <div className="flex flex-row items-center">
-                <span className="text-[#959595] text-sm">
-                  <i className="bx bxs-star text-xl text-[#FFD52DFF]"></i>{" "}
+              <div className="flex flex-row items-center text-xs sm:text-sm md:text-lg">
+                <span className="text-[#959595]">
+                  <i className="bx bxs-star text-[#FFD52DFF]"></i>{" "}
                   {displayRating}
                 </span>
-                <span className="text-[#959595] text-lg px-1">|</span>
-                <span className="text-[#959595] text-sm">Terjual -</span>
+                <span className="text-[#959595] px-1">|</span>
+                <span className="text-[#959595]">Terjual 0</span>
               </div>
             )}
           </div>

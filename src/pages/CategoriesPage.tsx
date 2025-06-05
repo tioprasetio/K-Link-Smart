@@ -29,7 +29,7 @@ const CategoryPage = () => {
 
       if (matchedCategory) {
         const categoryId = matchedCategory.id; // Ambil category_id
-        console.log("Found category ID:", categoryId);
+        // console.log("Found category ID:", categoryId);
 
         // Filter produk berdasarkan category_id
         filtered = products.filter((product) => {
@@ -45,7 +45,7 @@ const CategoryPage = () => {
 
         setFilteredProducts(filtered);
       } else {
-        console.log("Category not found!");
+        // console.log("Category not found!");
         setFilteredProducts([]);
       }
     }
