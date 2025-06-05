@@ -51,7 +51,7 @@ const HomePage = () => {
                 isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
               } text-xl font-bold mb-4`}
             >
-              Browse Category
+              Kategori
             </h2>
             <Category />
           </div>
