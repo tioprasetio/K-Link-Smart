@@ -982,7 +982,7 @@ const CheckoutPage = () => {
         </div>
         <div className="flex justify-between">
           <p className="font-medium">Total Berat</p>
-          <p className="font-medium">{totalWeight} Kg</p>
+          <p className="font-medium">{parseFloat(totalWeight.toFixed(2))} Kg</p>
         </div>
         <div className="flex justify-between">
           <p className="font-medium">Subtotal untuk produk</p>

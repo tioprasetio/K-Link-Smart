@@ -500,7 +500,7 @@ const ProductDetailPage = () => {
                   <h1
                     className={`${
                       isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-                    } text-2xl font-semibold mb-2`}
+                    } text-xl md:text-2xl font-semibold mb-2`}
                   >
                     {product.name}
                   </h1>
@@ -519,7 +519,7 @@ const ProductDetailPage = () => {
                     <h1
                       className={`${
                         isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
-                      } text-3xl font-bold`}
+                      } text-2xl md:text-3xl font-bold`}
                     >
                       {formatRupiah(product.harga)}
                     </h1>
