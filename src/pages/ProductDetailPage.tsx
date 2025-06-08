@@ -18,6 +18,7 @@ import ProductReviews from "../components/ProductReviews";
 import { ProductVariant } from "../types/ProductVariant";
 import useProductVariants from "../context/ProductVariantContext";
 import useProductAugmented from "../context/ProductAugmentedContext";
+import OriginalModal from "../components/OriginalModal";
 
 const ProductDetailPage = () => {
   const { addToCart, cart } = useCart();
@@ -28,6 +29,7 @@ const ProductDetailPage = () => {
   const { isLoggedIn } = useAuth();
   const { setSelectedProducts } = useCheckout();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const [showOriginalModal, setShowOriginalModal] = useState(false);
 
   const [quantity, setQuantity] = useState(1); // State untuk kuantitas produk
   const [product, setProduct] = useState<Product | null>(null); // State untuk menyimpan produk yang dipilih
@@ -458,11 +460,18 @@ const ProductDetailPage = () => {
                     <i className="text-xl bx bx-check-circle text-[#28a154]"></i>
                     <div>100% Produk Original</div>
                     <button
+                      onClick={() => setShowOriginalModal(true)}
                       type="button"
-                      className="ml-auto text-xl text-primary"
+                      className="ml-auto text-xl text-primary cursor-pointer"
                     >
                       <i className="text-xl bx bx-info-circle text-[#28a154]"></i>
                     </button>
+
+                    <OriginalModal
+                      show={showOriginalModal}
+                      onClose={() => setShowOriginalModal(false)}
+                      product={product}
+                    />
                   </div>
                 </section>
 
@@ -715,11 +724,18 @@ const ProductDetailPage = () => {
                       <i className="text-xl bx bx-check-circle text-[#28a154]"></i>
                       <div>100% Produk Original</div>
                       <button
+                        onClick={() => setShowOriginalModal(true)}
                         type="button"
-                        className="ml-auto text-xl text-primary"
+                        className="ml-auto text-xl text-primary cursor-pointer"
                       >
                         <i className="text-xl bx bx-info-circle text-[#28a154]"></i>
                       </button>
+
+                      <OriginalModal
+                        show={showOriginalModal}
+                        onClose={() => setShowOriginalModal(false)}
+                        product={product}
+                      />
                     </div>
                   </section>
                   <div

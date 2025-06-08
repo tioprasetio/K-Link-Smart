@@ -3,7 +3,12 @@ import { Link } from "react-router";
 import usePopupVoucher from "../context/PopupVoucher";
 import { useDarkMode } from "../context/DarkMode";
 
-const PopupVoucher = () => {
+type PopupVoucherProps = {
+  onClose: () => void;
+};
+
+
+const PopupVoucher = ({ onClose }: PopupVoucherProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const { popupVoucher, loading, error } = usePopupVoucher();
   const { isDarkMode } = useDarkMode();
@@ -12,12 +17,14 @@ const PopupVoucher = () => {
     const hasClosed = sessionStorage.getItem("popupVoucherClosed");
     if (hasClosed === "true") {
       setIsOpen(false);
+      onClose();
     }
   }, []);
 
   const handleClose = () => {
     sessionStorage.setItem("popupVoucherClosed", "true");
     setIsOpen(false);
+    onClose();
   };
 
   if (!isOpen) return null;

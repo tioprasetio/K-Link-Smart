@@ -72,7 +72,7 @@ const PaymentCallbackPage = () => {
     try {
       // Hapus dari backend (temporary_checkouts)
       if (checkoutToken) {
-        await axios.delete(
+        await axios.delete( 
           `${
             import.meta.env.VITE_APP_API_URL
           }/api/checkout-temp/${checkoutToken}`
@@ -81,6 +81,8 @@ const PaymentCallbackPage = () => {
       localStorage.removeItem("order_id");
 
       clearCheckedOutItems(selectedProducts);
+
+      localStorage.removeItem("checkoutToken");
 
       // Hapus checkout dari local storage dan state
       localStorage.removeItem("selectedProducts");
