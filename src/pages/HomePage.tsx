@@ -30,6 +30,10 @@ const HomePage = () => {
     }[]
   >([]);
 
+  const dikirimCount = orders.filter(
+    (order) => order.shipment_status === "dikirim"
+  ).length;
+
   useEffect(() => {
     if (user) {
       setLoadingShip(true);
@@ -73,7 +77,7 @@ const HomePage = () => {
       // Tampilkan alert, tunggu user klik "Oke"
       await Swal.fire({
         title: "Pesanan dalam perjalanan!",
-        text: "Kamu punya pesanan yang sudah dikirim. Klik 'Pesanan Diterima' jika barang sudah sampai.",
+        html: `Kamu punya <strong>${dikirimCount}</strong> pesanan yang sudah dikirim. Klik <em>'Pesanan Diterima'</em> jika barang sudah sampai.`,
         icon: "info",
         confirmButtonText: "Oke",
         allowOutsideClick: false,
