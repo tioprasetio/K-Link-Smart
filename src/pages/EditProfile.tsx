@@ -263,7 +263,7 @@ const EditProfile = () => {
                 Email
               </label>
               <p
-                className={`w-full p-4 border-none rounded-xl ${
+                className={`w-full p-4 border-none rounded-xl overflow-hidden ${
                   isDarkMode
                     ? "bg-[#252525] text-[#f0f0f0]"
                     : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
