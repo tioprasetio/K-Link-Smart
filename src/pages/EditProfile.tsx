@@ -16,6 +16,7 @@ const EditProfile = () => {
   const [formData, setFormData] = useState({
     uid: "",
     name: "",
+    email: "",
     plan: 1,
     no_hp: "",
     alamat: "",
@@ -41,6 +42,7 @@ const EditProfile = () => {
       setFormData({
         uid: user.uid || "",
         name: user.name || "",
+        email: user.email || "",
         plan: user.id_plan || 1,
         no_hp: user.no_hp || "",
         alamat: user.alamat || "",
@@ -253,6 +255,32 @@ const EditProfile = () => {
             </div>
 
             <div>
+              <label
+                className={`${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                } block mb-1`}
+              >
+                Email
+              </label>
+              <p
+                className={`w-full p-4 border-none rounded-xl ${
+                  isDarkMode
+                    ? "bg-[#252525] text-[#f0f0f0]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                }`}
+              >
+                {formData.email}
+              </p>
+            </div>
+
+            <div>
+              <label
+                className={`${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                } block mb-1`}
+              >
+                Plan
+              </label>
               <select
                 name="id_plan"
                 value={formData.plan}
@@ -359,21 +387,30 @@ const EditProfile = () => {
               />
             </div>
 
-            <select
-              name="jenis_kelamin"
-              value={formData.jenis_kelamin}
-              onChange={handleChange}
-              required
-              className={`w-full p-4 border-none rounded-xl ${
-                isDarkMode
-                  ? "bg-[#252525] text-[#f0f0f0]"
-                  : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
-              }`}
-            >
-              <option value="">Pilih</option>
-              <option value="L">Laki-laki</option>
-              <option value="P">Perempuan</option>
-            </select>
+            <div>
+              <label
+                className={`${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                } block mb-1`}
+              >
+                Jenis Kelamin
+              </label>
+              <select
+                name="jenis_kelamin"
+                value={formData.jenis_kelamin}
+                onChange={handleChange}
+                required
+                className={`w-full p-4 border-none rounded-xl ${
+                  isDarkMode
+                    ? "bg-[#252525] text-[#f0f0f0]"
+                    : "bg-[#F4F6F9] text-[#353535] shadow-[inset_3px_3px_6px_#DBDBDB,_inset_-3px_-3px_6px_#FFFFFF]"
+                }`}
+              >
+                <option value="">Pilih</option>
+                <option value="L">Laki-laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            </div>
 
             <div>
               <label
