@@ -145,7 +145,7 @@ const CardProduct = (props: CardProductProps) => {
         )}
       </button>
 
-      <div className="p-4 w-full">
+      <div className="p-2 w-full">
         <h3
           className={`${
             props.isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"
@@ -160,7 +160,7 @@ const CardProduct = (props: CardProductProps) => {
               <span
                 className={`${
                   props.isDarkMode ? "text-[#f0f0f0]" : "text-[#28A154]"
-                } text-xs sm:text-sm md:text-lg font-bold`}
+                } text-sm md:text-lg font-bold`}
               >
                 {formatRupiah(harga)}
               </span>

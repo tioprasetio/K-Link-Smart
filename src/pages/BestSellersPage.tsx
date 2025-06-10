@@ -61,7 +61,7 @@ const BestSellers = () => {
           isDarkMode ? "bg-[#140c00]" : "bg-[#f4f6f9]"
         } overflow-x-hidden w-full min-h-screen pt-16 sm:pt-24`}
       >
-        <div className="text-[#353535] text-xl font-medium p-6">
+        <div className="text-[#353535] text-xl font-medium p-4">
           <span
             className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}
           >
@@ -72,7 +72,7 @@ const BestSellers = () => {
           </span>
         </div>
 
-        <div className="flex gap-4 px-6">
+        <div className="flex gap-4 px-4">
           {/* Filter berdasarkan Harga */}
           <select
             onChange={(e) => {
@@ -118,8 +118,8 @@ const BestSellers = () => {
           </select>
         </div>
 
-        <div className="p-6 w-full">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="p-4 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
             {loading ? (
               <div className="flex justify-center items-center h-40">
                 <p className="text-gray-500">Loading...</p>
