@@ -619,7 +619,7 @@ const CheckoutPage = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="e.g. 'Bekasi, Jawa Barat'"
+              placeholder="e.g. '17520'"
               className={`${
                 isDarkMode
                   ? "bg-[#252525] text-[#FFFFFF] placeholder-gray-300 border-gray-700"
