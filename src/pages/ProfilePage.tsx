@@ -128,9 +128,13 @@ const ProfilePage = () => {
           } p-4 rounded-lg flex flex-col items-center gap-4 mb-4 mt-4`}
         >
           <img
-            src={`${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+            src={
               formData.profile_picture
-            }`}
+                ? `${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+                    formData.profile_picture
+                  }`
+                : "https://static.vecteezy.com/system/resources/previews/054/343/112/non_2x/a-person-icon-in-a-circle-free-png.png"
+            }
             alt="Current Profile"
             className="w-24 h-24 rounded-full object-cover shadow-lg"
           />

@@ -184,9 +184,13 @@ const EditProfile = () => {
               <div className="flex gap-4 items-center justify-center">
                 {user?.profile_picture && !profilePicture && (
                   <img
-                    src={`${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+                    src={
                       user.profile_picture
-                    }`}
+                        ? `${
+                            import.meta.env.VITE_APP_API_URL
+                          }/uploads/profile/${user.profile_picture}`
+                        : "https://static.vecteezy.com/system/resources/previews/028/196/724/non_2x/photographer-3d-profession-avatars-illustrations-free-png.png"
+                    }
                     alt="Current Profile"
                     className="w-20 h-20 rounded-lg"
                   />

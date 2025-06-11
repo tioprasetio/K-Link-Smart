@@ -318,10 +318,15 @@ const Register = () => {
             ))}
           </select>
           <input
-            type="date"
+            type="text"
             name="tanggal_lahir"
+            placeholder="Tanggal lahir"
             value={formData.tanggal_lahir}
             onChange={handleChange}
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => {
+              if (!e.target.value) e.target.type = "text";
+            }}
             required
             className={`w-full p-4 border-none rounded-xl ${
               isDarkMode
@@ -329,6 +334,7 @@ const Register = () => {
                 : "bg-[#f0f0f0] text-[#353535]"
             }`}
           />
+
           <input
             type="text"
             name="leader_id"

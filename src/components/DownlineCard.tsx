@@ -28,7 +28,7 @@ const DownlineCard: React.FC<Props> = ({ downline }) => {
             ? `${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
                 downline.profile_picture
               }`
-            : "/assets/images/health_accessories.png"
+            : "https://static.vecteezy.com/system/resources/previews/054/343/112/non_2x/a-person-icon-in-a-circle-free-png.png"
         }
         alt={downline.name}
         className="w-16 h-16 rounded-full object-cover"
