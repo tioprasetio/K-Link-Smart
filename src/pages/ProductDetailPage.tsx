@@ -19,6 +19,11 @@ import { ProductVariant } from "../types/ProductVariant";
 import useProductVariants from "../context/ProductVariantContext";
 import useProductAugmented from "../context/ProductAugmentedContext";
 import OriginalModal from "../components/OriginalModal";
+import useProductImages from "../context/ProductDetailImage";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper/modules";
+
+import "swiper/swiper-bundle.css";
 
 const ProductDetailPage = () => {
   const { addToCart, cart } = useCart();
@@ -46,6 +51,11 @@ const ProductDetailPage = () => {
 
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const { loadingProductDetail, getAllImages, detailImages } = useProductImages(
+    productId,
+    product
+  );
 
   // Cari produk berdasarkan ID
   useEffect(() => {
@@ -365,15 +375,68 @@ const ProductDetailPage = () => {
                 </div>
 
                 <div className="relative">
-                  <img
-                    src={`${import.meta.env.VITE_API_URL}/storage/${
-                      product.picture
-                    }`}
-                    alt={product.name}
-                    className="w-full object-cover"
-                    width={800}
-                    height={800}
-                  />
+                  {!loadingProductDetail ? (
+                    detailImages.length > 0 ? (
+                      // Ada gambar detail → Swiper
+                      <Swiper
+                        modules={[Pagination, Navigation]}
+                        pagination={{ clickable: true }}
+                        spaceBetween={0}
+                        slidesPerView={1}
+                        className="thumbnailSwiper"
+                      >
+                        {getAllImages().map((image, index) => (
+                          <SwiperSlide key={image.id}>
+                            <img
+                              src={`${import.meta.env.VITE_API_URL}/storage/${
+                                image.picture
+                              }`}
+                              alt={`${product.name} - ${index + 1}`}
+                              className="w-full object-cover cursor-pointer"
+                              width={800}
+                              height={800}
+                              onClick={() => {
+                                setSelectedImage(
+                                  `${import.meta.env.VITE_API_URL}/storage/${
+                                    image.picture
+                                  }`
+                                );
+                                setShowImageModal(true);
+                              }}
+                            />
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    ) : (
+                      // Tidak ada gambar detail → tampilkan gambar utama saja
+                      <img
+                        src={`${import.meta.env.VITE_API_URL}/storage/${
+                          product.picture
+                        }`}
+                        alt={product.name}
+                        className="w-full object-cover cursor-pointer"
+                        width={800}
+                        height={800}
+                        onClick={() => {
+                          setSelectedImage(
+                            `${import.meta.env.VITE_API_URL}/storage/${
+                              product.picture
+                            }`
+                          );
+                          setShowImageModal(true);
+                        }}
+                      />
+                    )
+                  ) : (
+                    // Loading State
+                    <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
+                        <span>Memuat gambar...</span>
+                      </div>
+                    </div>
+                  )}
+
                   {augmenteds.map((augmented) => (
                     <div
                       key={augmented.id}
@@ -414,7 +477,7 @@ const ProductDetailPage = () => {
                   </div>
                 )}
 
-                <div className="flex items-center justify-center cursor-pointer absolute top-0 left-0 bg-[#28A154] text-[#FFFFFF] rounded-tl-lg rounded-br-lg md:text-base text-sm font-bold p-2 transition">
+                <div className="flex z-10 items-center justify-center cursor-pointer absolute top-0 left-0 bg-[#28A154] text-[#FFFFFF] rounded-tl-lg rounded-br-lg md:text-base text-sm font-bold p-2 transition">
                   BV {product.bv}
                 </div>
               </section>

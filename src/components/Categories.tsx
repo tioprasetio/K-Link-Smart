@@ -26,7 +26,6 @@ const Category = () => {
         slidesPerView={1}
         spaceBetween={10}
         loop={false}
-        pagination={{ clickable: true }}
         breakpoints={{
           320: { slidesPerView: 2.3, spaceBetween: 10 },
           640: { slidesPerView: 4.3, spaceBetween: 20 },

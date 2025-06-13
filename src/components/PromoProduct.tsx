@@ -35,7 +35,6 @@ const PromoProduct = () => {
 
   return (
     <Swiper
-      pagination={{ clickable: true }}
       loop={false}
       modules={[Pagination]}
       slidesPerView={1}

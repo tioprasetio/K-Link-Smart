@@ -126,7 +126,6 @@ const ProductReviews = ({ productId }: { productId: number }) => {
       </div>
 
       <Swiper
-        pagination={{ clickable: true }}
         loop={false}
         modules={[Pagination]}
         slidesPerView={1}
