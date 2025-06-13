@@ -7,7 +7,6 @@ type PopupVoucherProps = {
   onClose: () => void;
 };
 
-
 const PopupVoucher = ({ onClose }: PopupVoucherProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const { popupVoucher, loading, error } = usePopupVoucher();
@@ -53,7 +52,7 @@ const PopupVoucher = ({ onClose }: PopupVoucherProps) => {
           <Link to="/voucher">
             <img
               src={`${import.meta.env.VITE_API_URL}/storage/${
-                popupVoucher[0]?.picture
+                popupVoucher?.picture
               }`}
               alt="voucher"
               className="w-full h-auto"
