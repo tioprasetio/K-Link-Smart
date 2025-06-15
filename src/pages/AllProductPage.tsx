@@ -120,7 +120,7 @@ const AllProduct = () => {
               <p className="text-gray-500">Loading...</p>
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
               {filteredProducts.map((product) => (
                 <CardProduct
                   key={product.id}

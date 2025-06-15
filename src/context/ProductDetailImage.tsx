@@ -53,7 +53,7 @@ const useProductImages = (
   const getAllImages = (): CombinedImage[] => {
     const combinedImages: CombinedImage[] = [];
 
-    // Tambahkan gambar utama dari product terlebih dahulu
+    // Tambahkan gambar utama dari product terlebih dahulu, klo ga mau bisa dihapus
     if (mainProduct?.picture) {
       combinedImages.push({
         id: "main",
@@ -61,6 +61,7 @@ const useProductImages = (
         source: "main",
       });
     }
+    // hapus sampe sini
 
     // Tambahkan gambar detail
     detailImages.forEach((image) => {

@@ -119,7 +119,7 @@ const BestSellers = () => {
         </div>
 
         <div className="p-4 w-full">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             {loading ? (
               <div className="flex justify-center items-center h-40">
                 <p className="text-gray-500">Loading...</p>

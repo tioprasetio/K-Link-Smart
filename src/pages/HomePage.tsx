@@ -149,7 +149,7 @@ const HomePage = () => {
     <div
       className={`${
         isDarkMode ? "bg-[#140c00]" : "bg-[#f4f6f9]"
-      } pt-16 sm:pt-24 overflow-x-hidden w-full min-h-screen`}
+      } pt-16 sm:pt-20 overflow-x-hidden w-full min-h-screen max-w-5xl mx-auto`}
     >
       {!isPopupClosed && (
         <PopupVoucher onClose={() => setIsPopupClosed(true)} />
@@ -189,7 +189,7 @@ const HomePage = () => {
                 </span>
               </button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
               {loading
                 ? Array.from({ length: 4 }).map((_, index) => (
                     <SkeletonListProduct key={index} />
@@ -222,7 +222,7 @@ const HomePage = () => {
                 </span>
               </button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
               {loading
                 ? Array.from({ length: 4 }).map((_, index) => (
                     <SkeletonListProduct key={index} />

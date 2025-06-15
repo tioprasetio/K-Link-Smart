@@ -312,7 +312,7 @@ const ProductDetailPage = () => {
       <div
         className={`${
           isDarkMode ? "bg-[#140c00]" : "bg-[#f4f6f9]"
-        } p-6 pt-24 sm:pt-28 pb-24 sm:pb-28 w-full min-h-screen`}
+        } p-6 pt-20 sm:pt-24 pb-24 sm:pb-28 w-full min-h-screen`}
       >
         {/* Tampilan detail produk */}
         <div className="container mx-auto">
