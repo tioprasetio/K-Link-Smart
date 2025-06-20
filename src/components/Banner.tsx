@@ -1,20 +1,12 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import useBanners from "../context/BannersContext";
-import { useDarkMode } from "../context/DarkMode";
+import SkeletonBanner from "./SkeletonBanner";
 
 const Banner = () => {
   const { banners, loading, error } = useBanners();
-  const { isDarkMode } = useDarkMode();
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
-          Memuat data...
-        </p>
-      </div>
-    );
+  if (loading) return <SkeletonBanner />;
 
   if (error) return <p>{error}</p>;
 

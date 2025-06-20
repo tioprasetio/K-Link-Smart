@@ -130,7 +130,7 @@ const HomePage = () => {
 
   const displayedProducts = useMemo(() => products.slice(0, 4), [products]);
 
-  if (loadingShip) {
+  if (loadingShip && user) {
     return (
       <div
         className={`${

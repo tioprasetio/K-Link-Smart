@@ -3,19 +3,14 @@ import { Pagination } from "swiper/modules";
 import { Link } from "react-router";
 import { useDarkMode } from "../context/DarkMode";
 import useCategories from "../context/CategoriesContext";
+import SkeletonCategory from "./SkeletonCategory";
 
 const Category = () => {
   const { isDarkMode } = useDarkMode();
   const { categories, loading, error } = useCategories();
 
   if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
-          Memuat data...
-        </p>
-      </div>
-    );
+    return <SkeletonCategory />;
 
   if (error) return <p>{error}</p>;
 

@@ -168,13 +168,6 @@ const SearchBar = () => {
         </div>
       </form>
 
-      {/* Tampilkan indikator loading */}
-      {loading && (
-        <div className="absolute mt-2 w-full text-center">
-          <p className="text-gray-500">Memuat data...</p>
-        </div>
-      )}
-
       {/* Tampilkan hasil pencarian */}
       {!loading && suggestions.length > 0 && (
         <ul
