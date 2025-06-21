@@ -6,6 +6,7 @@ import useProducts from "../context/ProductContext"; // Tambahkan ini
 import CardProduct from "../components/CardProduct";
 import { Product } from "../types/Product";
 import useCategories from "../context/CategoriesContext";
+import SkeletonListProduct from "../components/SkeletonListProduct";
 
 const CategoryPage = () => {
   const { isDarkMode } = useDarkMode();
@@ -51,28 +52,17 @@ const CategoryPage = () => {
     }
   }, [decodedCategory, products, categories, minRating, sort]); // Tambahkan categories sebagai dependency
 
-  if (loading) {
+  if (error)
     return (
-      <div
-        className={`${
-          isDarkMode ? "bg-[#140C00]" : "bg-[#f4f6f9]"
-        } flex gap-2 justify-center items-center min-h-screen z-9999`}
-      >
-        <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin ml-2"></div>
-        <p className={`${isDarkMode ? "text-[#f0f0f0]" : "text-[#353535]"}`}>
-          Memuat data...
-        </p>
+      <div className="p-4 w-full">
+        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">
+            <i className="bx bx-x-circle mr-1"></i>
+            {error}
+          </p>
+        </div>
       </div>
     );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -137,7 +127,13 @@ const CategoryPage = () => {
         </div>
 
         <div className="p-6 w-full">
-          {filteredProducts.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <SkeletonListProduct key={index} />
+              ))}
+            </div>
+          ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredProducts.map((product) => (
                 <CardProduct

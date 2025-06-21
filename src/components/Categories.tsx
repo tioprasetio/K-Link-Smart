@@ -12,7 +12,17 @@ const Category = () => {
   if (loading)
     return <SkeletonCategory />;
 
-  if (error) return <p>{error}</p>;
+  if (error)
+    return (
+      <div className="py-4 w-full">
+        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">
+            <i className="bx bx-x-circle mr-1"></i>
+            {error}
+          </p>
+        </div>
+      </div>
+    );
 
   return (
     <div className="mb-8">

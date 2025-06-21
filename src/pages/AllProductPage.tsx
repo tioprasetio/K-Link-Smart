@@ -4,6 +4,7 @@ import { useDarkMode } from "../context/DarkMode";
 import { useEffect, useState } from "react";
 import useProducts from "../context/ProductContext";
 import CardProduct from "../components/CardProduct";
+import SkeletonListProduct from "../components/SkeletonListProduct";
 
 const AllProduct = () => {
   const { products, loading, error } = useProducts();
@@ -41,16 +42,17 @@ const AllProduct = () => {
     setFilteredProducts(filtered);
   }, [keyword, sort, minRating, products]);
 
-  if (loading)
+  if (error)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
-          Memuat data...
-        </p>
+      <div className="p-4 w-full">
+        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">
+            <i className="bx bx-x-circle mr-1"></i>
+            {error}
+          </p>
+        </div>
       </div>
     );
-
-  if (error) return <p>{error}</p>;
 
   return (
     <>
@@ -116,8 +118,10 @@ const AllProduct = () => {
 
         <div className="p-4 w-full">
           {loading ? (
-            <div className="flex justify-center items-center h-40">
-              <p className="text-gray-500">Loading...</p>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <SkeletonListProduct key={index} />
+              ))}
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
