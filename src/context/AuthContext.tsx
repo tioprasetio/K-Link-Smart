@@ -214,29 +214,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { token, user };
     } catch (error) {
+      let errorMessage = "Terjadi kesalahan saat login";
+
       if (axios.isAxiosError(error)) {
-        // 👇 Tangkap error rate limiting (status 429)
-        if (error.response?.status === 429) {
-          const errorMessage =
-            error.response.data.message ||
-            "Terlalu banyak percobaan login. Coba lagi nanti.";
-          Swal.fire({
-            title: "Gagal Login",
-            text: errorMessage,
-            icon: "error",
-          });
-        } else {
-          // Error lainnya (401, 500, dll)
-          Swal.fire({
-            title: "Gagal Login",
-            text: error.response?.data?.message || "Email atau password salah",
-            icon: "error",
-          });
-        }
-      } else {
-        console.error("Non-Axios error:", error);
+        errorMessage =
+          error.response?.data?.message ||
+          (error.response?.status === 401
+            ? "Email atau password salah"
+            : error.response?.status === 429
+            ? "Terlalu banyak percobaan login. Coba lagi nanti."
+            : errorMessage);
       }
-      throw error; // Re-throw untuk penanganan tambahan di komponen
+
+      // Lempar object error lengkap untuk komponen
+      throw {
+        message: errorMessage,
+        status: axios.isAxiosError(error) ? error.response?.status : undefined,
+        original: error,
+      };
     }
   };
 

@@ -14,9 +14,11 @@ const Login = () => {
   const { fetchCart } = useCart();
   const { login, isLoggedIn, setIsLoggedIn, setUser, loading } = useAuth();
   const { isDarkMode } = useDarkMode();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoggingIn(true);
     try {
       const data = await login(email, password);
 
@@ -29,9 +31,11 @@ const Login = () => {
       navigate("/"); // Redirect ke halaman dashboard
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.error("🔴 Error login:", err.message);
-      setError(err.message);
+    } catch (error: any) {
+      // Set error untuk ditampilkan di UI
+      setError(error.message || "Terjadi kesalahan saat login");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -96,6 +100,7 @@ const Login = () => {
         </div>
         <form onSubmit={handleLogin} className="flex flex-col gap-8">
           <input
+            autoFocus
             type="email"
             placeholder="Email"
             value={email}
@@ -119,11 +124,17 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full p-4 font-bold text-white rounded-xl bg-[#28a154] hover:bg-[#167e3c] cursor-pointer"
+            className={`${
+              isLoggingIn ? "opacity-50 cursor-wait" : ""
+            } w-full p-4 font-bold text-white rounded-xl bg-[#28a154] hover:bg-[#167e3c] cursor-pointer`}
           >
-            Login
+            {isLoggingIn ? "Memproses..." : "Login"}
           </button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          {error && (
+            <div className="p-3 mb-4 text-center text-red-600 bg-red-100 rounded-lg">
+              {error}
+            </div>
+          )}
 
           <div className="flex justify-center items-center gap-1 mt-4">
             <p
