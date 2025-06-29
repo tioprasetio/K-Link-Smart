@@ -1,54 +1,148 @@
-# React + TypeScript + Vite
+Based on the codebase context, you're asking me to create a proper README.md file for the K-Link Smart project. The current README.md is just a generic Vite template [1](#0-0) , but the project is actually a comprehensive e-commerce application with MLM capabilities .
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Answer
 
-Currently, two official plugins are available:
+Here's a comprehensive README.md file for the K-Link Smart project:
+markdown
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# K-Link Smart
 
-## Expanding the ESLint configuration
+A comprehensive e-commerce application that combines traditional online shopping functionality with multi-level marketing (MLM) capabilities. Built with React, TypeScript, and modern web technologies.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### E-commerce Functionality
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- Product browsing and search
+- Shopping cart management
+- Secure checkout with Midtrans payment integration
+- Order tracking and management
+- User reviews and ratings
+- Wishlist functionality
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### MLM Network Marketing
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- Business Volume (BV) tracking and allocation
+- Downline network management
+- Bonus calculation engine
+- BV period reporting
+- MLM dashboard and analytics
+
+### User Experience
+
+- Responsive design for all devices
+- Dark mode support
+- Real-time notifications
+- Intuitive navigation
+- Loading states and skeleton components
+
+## Tech Stack
+
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Routing**: React Router v7
+- **State Management**: React Context API
+- **HTTP Client**: Axios
+- **Authentication**: JWT with jwt-decode
+- **UI Components**: Flowbite
+- **Notifications**: SweetAlert2
+- **Carousel**: Swiper
+- **Payment**: Midtrans integration
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (version 18 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   bash
+   git clone https://github.com/tioprasetio/K-Link-Smart.git
+   cd K-Link-Smart`
+
+2. Install dependencies:
+   bash
+   npm install
+
+3. Start the development server:
+   bash
+   npm run dev
+
+4. Open your browser and navigate to `http://localhost:5173`
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Project Structure
+
+src/
+├── components/ # Reusable UI components
+├── context/ # React Context providers
+├── pages/ # Page components
+├── routes/ # Route protection components
+├── types/ # TypeScript type definitions
+└── main.tsx # Application entry point
+
+## Key Architecture
+
+### Context-Based State Management
+
+The application uses React Context API for global state management:
+
+- `AuthContext` - User authentication and session management
+- `CartContext` - Shopping cart state
+- `ProductContext` - Product data management
+- `CheckoutContext` - Checkout process state
+- `WishlistContext` - User wishlist management
+- `ReviewContext` - Product reviews
+- `DarkModeContext` - Theme management
+
+### Route Protection
+
+- **Public Routes**: Homepage, product browsing, about pages
+- **Guest Routes**: Login and registration (unauthenticated users only)
+- **Protected Routes**: User profile, orders, MLM features (authenticated users only)
+
+## MLM Features
+
+The application includes sophisticated MLM functionality:
+
+- **BV Tracking**: Monitor Business Volume across network
+- **Downline Management**: View and manage network structure
+- **Bonus Calculations**: Automated bonus computation
+- **Reporting**: Comprehensive BV and performance reports
+
+## Deployment
+
+The application is configured for deployment on Vercel with optimized routing configuration.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is private and proprietary.
+
+## Contact
+
+For support or inquiries, contact the development team.
+
+## Notes
+
+The current README.md file contains only generic Vite template content [2](#0-1) , which doesn't reflect the actual project capabilities. The new README provides comprehensive documentation based on the project structure visible in the codebase, including the main application entry point [3](#0-2) , package dependencies [4](#0-3) , and the various contexts and features described in the Overview wiki page.
+
+Wiki pages you might want to explore:
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tioprasetio/K-Link-Smart)
