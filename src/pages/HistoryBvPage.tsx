@@ -14,6 +14,7 @@ interface BVItem {
   created_at: string;
   product_name: string;
   checkout_plan: number;
+  bv_period_name: string;
   quantity: number;
   product_bv: number;
   total_bv: number;
@@ -147,7 +148,8 @@ const HistoryBvPage = () => {
                       {item.product_name}
                     </p>
                     <p className="text-sm text-gray-400">
-                      {getPlanName(item.checkout_plan, plans)}
+                      {getPlanName(item.checkout_plan, plans)} | Period:{" "}
+                      {item.bv_period_name}
                     </p>
                     <p className="text-sm text-gray-400">
                       Quantity: {item.quantity} | BV/item: {item.product_bv}

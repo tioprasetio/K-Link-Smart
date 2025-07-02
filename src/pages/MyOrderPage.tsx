@@ -512,7 +512,7 @@ const MyOrderPage = () => {
                     {order.shipment_status === "dikirim" && (
                       <button
                         onClick={() => handleOrderComplete(order.order_id)}
-                        className="p-2 rounded-lg text-center font-semibold w-full border border-green-500 text-green-600 hover:bg-green-50 transition cursor-pointer"
+                        className="p-2 rounded-lg text-center font-semibold w-full text-white hover:bg-green-700 bg-green-500 transition cursor-pointer"
                       >
                         Pesanan Diterima
                       </button>
