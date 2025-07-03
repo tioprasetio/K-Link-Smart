@@ -41,9 +41,9 @@ const HomePage = () => {
     }[]
   >([]);
 
-  const dikirimCount = orders.filter(
-    (order) => order.shipment_status === "dikirim"
-  ).length;
+  const dikirimCount = useMemo(() => {
+    return orders.filter((order) => order.shipment_status === "dikirim").length;
+  }, [orders]);
 
   useEffect(() => {
     if (user) {
@@ -100,7 +100,7 @@ const HomePage = () => {
     };
 
     showShipmentAlert();
-  }, [orders, isPopupClosed, user, isAlertShown]);
+  }, [orders, isPopupClosed, user, isAlertShown, dikirimCount]);
 
   useEffect(() => {
     axios
@@ -129,6 +129,47 @@ const HomePage = () => {
   );
 
   const displayedProducts = useMemo(() => products.slice(0, 4), [products]);
+
+  const renderedReviews = useMemo(() => {
+    return reviews.map((review, index) => (
+      <div
+        key={index}
+        className={`p-4 rounded-xl shadow-lg flex flex-col items-start gap-2 ${
+          isDarkMode ? "bg-[#1e1e1e] text-white" : "bg-white text-gray-800"
+        }`}
+      >
+        {/* Profile + Name */}
+        <div className="flex items-center gap-3">
+          <img
+            src={
+              review.profile_picture
+                ? `${import.meta.env.VITE_APP_API_URL}/uploads/profile/${
+                    review.profile_picture
+                  }`
+                : "https://static.vecteezy.com/system/resources/previews/054/343/112/non_2x/a-person-icon-in-a-circle-free-png.png"
+            }
+            alt={review.user_name}
+            className="w-12 h-12 rounded-full object-cover"
+          />
+          <div className="flex flex-col">
+            <p className="font-semibold text-lg">{review.user_name}</p>
+            {/* Rating */}
+            <div className="text-yellow-400 text-lg flex gap-1 py-2">
+              {[...Array(review.rating)].map((_, i) => (
+                <i key={`filled-${i}`} className="bx bxs-star"></i>
+              ))}
+              {[...Array(5 - review.rating)].map((_, i) => (
+                <i key={`empty-${i}`} className="bx bx-star"></i>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Comment */}
+        <p className="text-sm">{review.comment}</p>
+      </div>
+    ));
+  }, [reviews, isDarkMode]);
 
   if (loadingShip && user) {
     return (
@@ -255,51 +296,7 @@ const HomePage = () => {
                 ? Array.from({ length: 4 }).map((_, index) => (
                     <SkeletonReviewCard key={index} />
                   ))
-                : reviews.map((review, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-xl shadow-lg flex flex-col items-start gap-2 ${
-                        isDarkMode
-                          ? "bg-[#1e1e1e] text-white"
-                          : "bg-white text-gray-800"
-                      }`}
-                    >
-                      {/* Profile + Name */}
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={
-                            review.profile_picture
-                              ? `${
-                                  import.meta.env.VITE_APP_API_URL
-                                }/uploads/profile/${review.profile_picture}`
-                              : "https://static.vecteezy.com/system/resources/previews/054/343/112/non_2x/a-person-icon-in-a-circle-free-png.png"
-                          }
-                          alt={review.user_name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="flex flex-col">
-                          <p className="font-semibold text-lg">
-                            {review.user_name}
-                          </p>
-                          {/* Rating */}
-                          <div className="text-yellow-400 text-lg flex gap-1 py-2">
-                            {[...Array(review.rating)].map((_, i) => (
-                              <i
-                                key={`filled-${i}`}
-                                className="bx bxs-star"
-                              ></i>
-                            ))}
-                            {[...Array(5 - review.rating)].map((_, i) => (
-                              <i key={`empty-${i}`} className="bx bx-star"></i>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Comment */}
-                      <p className="text-sm">{review.comment}</p>
-                    </div>
-                  ))}
+                : renderedReviews}
             </div>
           </div>
         </div>

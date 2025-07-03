@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import NavbarComponent from "../components/Navbar";
 import { Bonus } from "../types/Bonus";
@@ -35,7 +35,14 @@ const BonusPage = () => {
   const [periods, setPeriods] = useState<Period[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const selectedBonus = bonuses.find((b) => b.bv_period_id === selectedPeriod);
+  const selectedBonus = useMemo(
+    () => bonuses.find((b) => b.bv_period_id === selectedPeriod),
+    [bonuses, selectedPeriod]
+  );
+
+  const selectedPeriodData = useMemo(() => {
+    return periods.find((p) => p.id === selectedPeriod);
+  }, [periods, selectedPeriod]);
 
   // New state for downline BV data
   const [downlineBvSummary, setDownlineBvSummary] =
@@ -191,9 +198,7 @@ const BonusPage = () => {
           >
             <div className="flex flex-row justify-between w-full">
               <h1 className="text-sm font-bold">Bonus bulan</h1>
-              <p className="text-sm">
-                {periods.find((p) => p.id === selectedPeriod)?.name}
-              </p>
+              <p className="text-sm">{selectedPeriodData?.name}</p>
             </div>
             <h1 className="text-2xl font-bold">
               {formatRupiah(bonus.bonus_rupiah)}

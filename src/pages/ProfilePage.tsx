@@ -24,7 +24,6 @@ const ProfilePage = () => {
     email: "",
   });
   const navigate = useNavigate();
-  const totalItems = wishlistItems.length;
   const [orders, setOrders] = useState<
     {
       shipment_status: string;
@@ -76,6 +75,10 @@ const ProfilePage = () => {
   const totalPesanan = useMemo(() => {
     return orders.filter((order) => order.shipment_status === "dikirim").length;
   }, [orders]);
+
+  const totalItems = useMemo(() => {
+    return wishlistItems.length;
+  }, [wishlistItems]);
 
   // Tampilkan loading hanya jika autentikasi belum dicek
   if (loading) {
