@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import usePopupVoucher from "../context/PopupVoucher";
-import { useDarkMode } from "../context/DarkMode";
 
 type PopupVoucherProps = {
   onClose: () => void;
@@ -10,7 +9,6 @@ type PopupVoucherProps = {
 const PopupVoucher = ({ onClose }: PopupVoucherProps) => {
   const [isOpen, setIsOpen] = useState(true);
   const { popupVoucher, loading, error } = usePopupVoucher();
-  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     const hasClosed = sessionStorage.getItem("popupVoucherClosed");
@@ -18,7 +16,7 @@ const PopupVoucher = ({ onClose }: PopupVoucherProps) => {
       setIsOpen(false);
       onClose();
     }
-  }, []);
+  }, [onClose]);
 
   const handleClose = () => {
     sessionStorage.setItem("popupVoucherClosed", "true");
@@ -30,10 +28,11 @@ const PopupVoucher = ({ onClose }: PopupVoucherProps) => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className={`${isDarkMode ? "text-white" : "text-[#353535]"}`}>
-          Memuat data...
-        </p>
+      <div className="fixed inset-0 z-9999 flex items-center justify-center h-full backdrop-blur-xs bg-[#00000070]">
+        <div className="w-full max-w-md rounded-lg p-4 relative flex flex-row items-center justify-center gap-2">
+          <div className="w-6 h-6 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
+          <p className="text-[#f0f0f0]">Memuat data...</p>
+        </div>
       </div>
     );
 
